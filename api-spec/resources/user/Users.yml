@@ -1,0 +1,39 @@
+get:
+  summary: Show all users
+  operationId: getAllUsers
+  tags:
+    - user
+  responses:
+    '200':
+      description: successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items: 
+              $ref: '../../schemas/_index.yml#/User'
+    '404':
+      description: No users found
+
+  # This API has no security
+  security: []
+
+post:
+  summary: Add new user
+  operationId: addUser
+  tags:
+    - user
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema: 
+          $ref: '../../schemas/_index.yml#/UserPostUpdateRequest'
+  responses:
+    '201':
+      description: Added user (username)
+    '400':
+      description: Bad request
+
+  # This API has no security
+  security: []

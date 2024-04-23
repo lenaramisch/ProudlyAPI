@@ -1,0 +1,34 @@
+enum todo_size {
+    small
+    medium
+    big
+}
+
+Table users {
+  id integer [primary key, increment]
+  username varchar
+  created_at timestamp [default: `now()`]
+}
+
+Table pets {
+  id integer [primary key, increment]
+  user_id integer
+  name varchar
+  xp integer
+  happiness integer
+  happiness_reduction_rate integer
+  happiness_last_updated timestamp
+  created_at timestamp [default: `now()`]
+}
+
+Table todos {
+  id integer [primary key, increment]
+  user_id integer
+  title varchar
+  size todo_size
+  completed boolean [default: false]
+  created_at timestamp [default: `now()`]
+}
+
+ref: pets.user_id > users.id
+ref: todos.user_id > users.id

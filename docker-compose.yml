@@ -1,0 +1,29 @@
+version: '3.5'
+
+services:
+  db:
+    container_name: cartmanager_db_ts
+    image: postgres:alpine3.18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-data:/data/postgres
+    ports:
+      - "5432:5432"
+
+  dbmigration:
+    container_name: cartmanager_migration_ts
+    build:
+      context: .
+      dockerfile: ./database/build/migrate.dockerfile
+    restart: on-failure
+    environment:
+      APP_DATABASE_HOST: db
+      APP_DATABASE_PORT: 5432
+      APP_DATABASE_NAME: postgres
+      APP_DATABASE_USER: ${POSTGRES_USER:-postgres}
+      APP_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    depends_on:
+      - db

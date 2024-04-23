@@ -1,0 +1,21 @@
+# Responses
+
+# Requests
+PetPostUpdateRequest:
+  $ref: './requests/PetPostUpdateRequest.yml'
+
+TodoPostUpdateRequest:
+  $ref: './requests/TodoPostUpdateRequest.yml'
+
+UserPostUpdateRequest:
+  $ref: './requests/UserPostUpdateRequest.yml'
+
+# Types
+Pet:
+  $ref: './types/pet.yml'
+
+Todo:
+  $ref: './types/todo.yml'
+  
+User:
+  $ref: './types/user.yml'

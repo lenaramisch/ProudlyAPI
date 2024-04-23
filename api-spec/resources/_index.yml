@@ -1,0 +1,23 @@
+/todos:
+  $ref: './todo/Todos.yml'
+
+/todos/{Id}:
+  $ref: './todo/TodoById.yml'
+
+/todos/user/{userId}:
+  $ref: './todo/TodosByUserId.yml'
+
+/users:
+  $ref: './user/Users.yml'
+
+/users/{userId}:
+  $ref: './user/UserById.yml'
+
+/pets:
+  $ref: './pet/Pets.yml'
+
+/pets/user/{userId}:
+  $ref: './pet/PetByUserId.yml'
+
+/pets/{petId}:
+  $ref: './pet/PetById.yml'

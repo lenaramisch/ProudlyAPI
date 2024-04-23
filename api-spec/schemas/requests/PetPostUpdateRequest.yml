@@ -1,0 +1,12 @@
+type: object
+properties:
+  name:
+    type: string
+    example: Tabby
+  userid:
+    type: integer
+    format: int64
+    example: 2
+required:
+  - name
+  - userid

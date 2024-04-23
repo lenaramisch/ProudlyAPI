@@ -1,0 +1,82 @@
+delete:
+  summary: Delete pet by petID
+  operationId: deletePetById
+  tags:
+    - pet
+  parameters:
+    - name: petId
+      in: path
+      description: ID of pet to delete
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '200':
+      description: Deleted pet (pet ID)
+    '400':
+      description: Invalid ID supplied
+    '404':
+      description: Can not find pet (pet ID)
+
+  # This API has no security
+  security: []
+
+put:
+  summary: Update a pets name
+  operationId: updatePetById
+  tags:
+    - pet
+  parameters:
+    - name: petId
+      in: path
+      description: ID of pet that needs to be updated
+      required: true
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema: 
+          $ref: '../../schemas/_index.yml#/PetPostUpdateRequest'
+  responses:
+    '200':
+      description: Update done
+    '400':
+      description: Invalid ID supplied
+    '404':
+      description: Can not find pet (pet ID)
+
+  # This API has no security
+  security: []
+
+get:
+  summary: Get a pet by petID
+  operationId: getPetById
+  tags:
+    - pet
+  parameters:
+    - name: petId
+      in: path
+      description: ID of pet from which content is to get
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '200':
+      description: successful operation
+      content:
+        application/json:
+          schema:
+            items: 
+              $ref: '../../schemas/_index.yml#/Pet'
+    '400':
+      description: Invalid ID supplied
+    '404':
+      description: Can not find pet (pet ID)
+
+  # This API has no security
+  security: []
