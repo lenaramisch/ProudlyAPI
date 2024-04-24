@@ -1,41 +1,83 @@
-import { PetDomain, UserDomain, TodoDomain } from "../domain/models";
-import { PetDTO, UserDTO, TodoDTO } from "./models";
+import { UserDomain } from "../domain/models";
+import { UserDTO } from "./models";
 import domain from "../domain/domain";
 
 module.exports = {
-    //TODO add handler functions for user
-    /*getAllCarts: async function() {
+    getAllUsers: async function() {
         try {
-            const domainCarts = await domain.getAllCarts();
-            if (Object.keys(domainCarts).length === 0) {
-                return { status: 404, message: 'No carts found'};
+            const domainUsers = await domain.getAllUsers();
+            if (Object.keys(domainUsers).length === 0) {
+                return { status: 404, message: 'No users found'};
             }
-            if (domainCarts instanceof Error) {
+            if (domainUsers instanceof Error) {
                 return { status: 500, message: "Internal Server Error"}
             }
-            const dtoCarts = domainCarts.map((cart: CartDomain) => new CartDTO(cart.id, cart.userid, cart.name))
-            return { status: 200, data: dtoCarts };
+            const dtoUsers = domainUsers.map((user: UserDomain) => new UserDTO(user.id, user.username))
+            return { status: 200, data: dtoUsers };
         } catch (err: any) {
             console.error(err);
             return { status: 500, message: 'Internal Server Error' };
         }
     },
 
-    addCart: async function (name: string, userid: number) {
-        if (isNaN(userid)) {
-            return { status: 400, message: 'Invalid ID supplied' };
-        }
+    addUser: async function (username: string) {
         try {
-            const userResult = await domain.getUserById(userid);
-            if (Object.keys(userResult).length === 0) {
-                return { status: 404, message: `Can not find user (user ID: ${userid})`};
+            await domain.addUser(username);
+            return { status: 201, message: `Added user with name ${username}` };
+        } catch (err: any) {
+            console.error(err);
+            return { status: 500, message: 'Internal Server Error' };
+        }
+    },
+
+    getUserById: async function (user_id: number) {
+        try {
+            const domainUser = await domain.getUserById(user_id);
+            if (Object.keys(domainUser).length === 0) {
+                return { status: 404, message: 'No user found for user_id ' + user_id};
             }
-            await domain.addCart(name, userid);
-            return { status: 201, message: `Added cart with name ${name} for user (user ID: ${userid})` };
+            if (domainUser instanceof Error) {
+                return { status: 500, message: "Internal Server Error"}
+            }
+            const dtoUser = new UserDTO(domainUser.id, domainUser.username);
+            return { status: 200, data: dtoUser };
+        } catch (err: any) {
+            console.error(err);
+            return { status: 500, message: 'Internal Server Error' };
+        }
+    },
+
+    updateUserById: async function (user_id: number, username: string) {
+        try {
+            const domainUser = await domain.getUserById(user_id);
+            if (Object.keys(domainUser).length === 0) {
+                return { status: 404, message: 'No user found for user_id ' + user_id};
+            }
+            if (domainUser instanceof Error) {
+                return { status: 500, message: "Internal Server Error"}
+            }
+            await domain.updateUserById(user_id, username);
+            return { status: 200, message: 'Updated user' }
+        } catch (err: any) {
+            console.error(err);
+            return { status: 500, message: 'Internal Server Error' };
+        }
+    },
+
+    deleteUserById: async function (user_id: number) {
+        try {
+            const domainUser = await domain.getUserById(user_id);
+            if (Object.keys(domainUser).length === 0) {
+                return { status: 404, message: 'No user found for user_id ' + user_id};
+            }
+            if (domainUser instanceof Error) {
+                return { status: 500, message: "Internal Server Error"}
+            }
+            await domain.deleteUserById(user_id)
+            return { status: 200, message: 'Deleted user with user_id ' + user_id}
         } catch (err: any) {
             console.error(err);
             return { status: 500, message: 'Internal Server Error' };
         }
     }
-    */
 }
