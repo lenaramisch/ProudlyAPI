@@ -3,8 +3,14 @@ import { UserDomain, PetDomain, TodoDomain } from '../domain/models';
 import { TodoDB, UserDB, PetDB } from './models';
 
 //All the DB Querys:
-//TODO add todo querys
-
+//querys todo
+const getAllTodosQuery: string = 'SELECT * FROM todos';
+const addTodoQuery: string = 'INSERT INTO todos(user_id, title, size) VALUES($1, $2, $3)';
+const getTodoByIdQuery: string = 'SELECT * FROM todos WHERE id = $1';
+const updateTodoByIdQuery: string = 'UPDATE todo SET title = $2, size = $3 WHERE id = $1';
+const deleteTodoByIdQuery: string = 'DELETE FROM todos WHERE id = $1';
+const getTodosByUserIdQuery: string = 'SELECT * FROM todos WHERE user_id = $1';
+const deleteTodosByUserIdQuery: string = 'DELETE FROM todos WHERE user_id = $1';
 
 //user querys
 const getAllUsersQuery: string = 'SELECT * FROM users';
@@ -13,8 +19,14 @@ const getUserByIdQuery: string = 'SELECT * FROM users WHERE id = $1';
 const updateUserByIdQuery: string = 'UPDATE users SET username = $2 WHERE id = $1';
 const deleteUserByIdQuery: string = 'DELETE FROM users WHERE id = $1';
 
-//TODO add pet querys
-
+//pet querys
+const getAllPetsQuery: string = 'SELECT * FROM pets';
+const addPetQuery: string = 'INSERT INTO pets(user_id, name) VALUES($1, $2)';
+const deletePetByUserIdQuery: string = 'DELETE FROM pets WHERE user_id = $1';
+const getPetByUserIdQuery: string = 'SELECT * FROM pets WHERE user_id = $1';
+const deletePetByIdQuery: string = 'DELETE FROM pets WHERE id = $1';
+const updatePetByIdQuery: string = 'UPDATE pets SET name = $2 WHERE id= $1';
+const getPetByIdQuery: string = 'SELECT * FROM pets WHERE id = $1';
 
 export enum TodoSize {
     Small = "small",
@@ -25,6 +37,26 @@ export enum TodoSize {
 interface UserRow {
     id: number,
     username: string,
+    created_at: string
+}
+
+interface PetRow {
+    id: number,
+    user_id: number,
+    name: string,
+    xp: number,
+    happiness: number,
+    happiness_reduction_rate: number,
+    happiness_last_updated: string,
+    created_at: string
+}
+
+interface TodoRow {
+    id: number,
+    user_id: number,
+    title: string,
+    size: TodoSize,
+    completed: boolean,
     created_at: string
 }
 
@@ -48,10 +80,26 @@ interface Database {
     updateUserById: (user_id: number, username: string) => Promise<string | Error>;
     deleteUserById: (user_id: number) => Promise<string | Error>;
     
-    //TODO add db function definitions for todo and pet
+    //to-do
+    getAllTodos: () => Promise<TodoDomain[] | Error>;
+    addTodo: (user_id: number, title: string, size: TodoSize) => Promise<string | Error>;
+    getTodoById: (todo_id: number) => Promise<TodoDomain | Error>;
+    updateTodoById: (todo_id: number, title: string, size: TodoSize) => Promise<string | Error>;
+    deleteTodoById: (todo_id: number) => Promise<string | Error>;
+    getTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>;
+    deleteTodosByUserId: (user_id: number) => Promise<string | Error>;
+
+    //pet
+    getAllPets: () => Promise<PetDomain[] | Error >;
+    addPet: (user_id: number, name: string) => Promise<string | Error>;
+    getPetByUserId: (user_id: number) => Promise<PetDomain | Error>;
+    deletePetByUserId: (user_id: number) => Promise<string | Error>;
+    getPetById: (pet_id: number) => Promise<PetDomain | Error>;
+    updatePetById: (pet_id: number, name: string) => Promise<string | Error>;
+    deletePetById: (pet_id: number) => Promise<string | Error>;
 }
 
-//TODO add db functions for todo and pet
+//TODO add db functions for todo
 const database: Database = {
     query: (text, params) => pool.query(text, params),
     getAllUsers: async function () {
@@ -93,6 +141,158 @@ const database: Database = {
     deleteUserById: async function (user_id: number) {
         try {
             pool.query(deleteUserByIdQuery, [user_id])
+            return "ok"
+        } catch (error: any) {
+            return error
+        }
+    },
+    getAllPets: async function () {
+        try{
+            const dbResult = await pool.query(getAllPetsQuery);
+            // map raw QueryResult to db model classes
+            const dbModelPet = dbResult.rows.map((row: PetRow) => new PetDB(
+                row.id, row.user_id, row.name, row.xp, row.happiness, 
+                row.happiness_reduction_rate, row.happiness_last_updated, 
+                row.created_at))
+            // map db model carts to domain model carts
+            return dbModelPet.map((dbPet: PetDB) => new PetDomain(
+                dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
+                dbPet.happiness, dbPet.happiness_reduction_rate, 
+                dbPet.happiness_last_updated));
+        } catch (error: any) {
+            return error
+        }
+    },
+    addPet: async function (user_id: number, name: string) {
+        try {
+            pool.query(addPetQuery, [user_id, name]);
+            return "ok"
+        } catch (error: any) {
+            return error
+        }
+    },
+    getPetByUserId: async function (user_id: number) {
+        try {
+            const dbResult = await pool.query(getPetByUserIdQuery, [user_id]);
+            const dbModelPet = dbResult.rows.map((row: PetRow) => new PetDB(
+                row.id, row.user_id, row.name, row.xp, row.happiness, 
+                row.happiness_reduction_rate, row.happiness_last_updated, 
+                row.created_at));
+            return dbModelPet.map((dbPet: PetDB) => new PetDomain(
+                dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
+                dbPet.happiness, dbPet.happiness_reduction_rate, 
+                dbPet.happiness_last_updated))
+        } catch (error: any) {
+            return error
+        }
+    },
+    deletePetByUserId: async function (user_id: number) {
+        try {
+            pool.query(deletePetByUserIdQuery, [user_id])
+            return "ok"
+        } catch (error: any) {
+            return error
+        }
+    },
+    getPetById: async function (pet_id: number) {
+        try {
+            const dbResult = await pool.query(getPetByIdQuery, [pet_id]);
+            const dbModelPet = dbResult.rows.map((row: PetRow) => new PetDB(
+                row.id, row.user_id, row.name, row.xp, row.happiness, 
+                row.happiness_reduction_rate, row.happiness_last_updated, 
+                row.created_at));
+            return dbModelPet.map((dbPet: PetDB) => new PetDomain(
+                dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
+                dbPet.happiness, dbPet.happiness_reduction_rate, 
+                dbPet.happiness_last_updated))
+        } catch (error: any) {
+            return error
+        }
+    },
+    updatePetById: async function (pet_id: number, name: string) {
+        try {
+            pool.query(updatePetByIdQuery, [pet_id, name])
+            return "ok"
+        } catch (error: any) {
+            return error
+        }
+    },
+    deletePetById: async function (pet_id: number) {
+        try {
+            pool.query(deletePetByIdQuery, [pet_id])
+            return "ok"
+        } catch (error: any) {
+            return error
+        }
+    },
+    getAllTodos: async function () {
+        try{
+            const dbResult = await pool.query(getAllTodosQuery);
+            // map raw QueryResult to db model classes
+            const dbModelTodo = dbResult.rows.map((row: TodoRow) => new TodoDB(
+                row.id, row.user_id, row.title, row.size, row.completed, row.created_at
+            ))
+            // map db model carts to domain model carts
+            return dbModelTodo.map((dbTodo: TodoDB) => new TodoDomain(
+                dbTodo.id, dbTodo.user_id, dbTodo.title, dbTodo.size, dbTodo.completed
+            ));
+        } catch (error: any) {
+            return error
+        }
+    },
+    addTodo: async function (user_id: number, title: string, size: TodoSize) {
+        try {
+            pool.query(addTodoQuery, [user_id, title, size]);
+            return "ok"
+        } catch (error: any) {
+            return error
+        }
+    },
+    getTodoById: async function (todo_id: number) {
+        try {
+            const dbResult = await pool.query(getTodoByIdQuery, [todo_id]);
+            const dbModelTodo = dbResult.rows.map((row: TodoRow) => new TodoDB(
+                row.id, row.user_id, row.title, row.size, row.completed, row.created_at
+            ));
+            return dbModelTodo.map((dbTodo: TodoDB) => new TodoDomain(
+                dbTodo.id, dbTodo.user_id, dbTodo.title, dbTodo.size, dbTodo.completed
+            ));
+        } catch (error: any) {
+            return error
+        }
+    },
+    updateTodoById: async function (todo_id: number, title: string, size: TodoSize) {
+        try {
+            pool.query(updateTodoByIdQuery, [todo_id, title, size])
+            return "ok"
+        } catch (error: any) {
+            return error
+        }
+    },
+    deleteTodoById: async function (todo_id: number) {
+        try {
+            pool.query(deleteTodoByIdQuery, [todo_id])
+            return "ok"
+        } catch (error: any) {
+            return error
+        }
+    },
+    getTodosByUserId: async function (user_id: number) {
+        try {
+            const dbResult = await pool.query(getTodosByUserIdQuery, [user_id]);
+            const dbModelTodo = dbResult.rows.map((row: TodoRow) => new TodoDB(
+                row.id, row.user_id, row.title, row.size, row.completed, row.created_at
+            ));
+            return dbModelTodo.map((dbTodo: TodoDB) => new TodoDomain(
+                dbTodo.id, dbTodo.user_id, dbTodo.title, dbTodo.size, dbTodo.completed
+            ));
+        } catch (error: any) {
+            return error
+        }
+    },
+    deleteTodosByUserId: async function (user_id: number) {
+        try {
+            pool.query(deleteTodosByUserIdQuery, [user_id])
             return "ok"
         } catch (error: any) {
             return error
