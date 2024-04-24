@@ -1,6 +1,5 @@
 import { PetDomain, UserDomain, TodoDomain } from "../domain/models";
-//TODO add DTO models!
-//import { PetDTO, UserDTO, TodoDTO } from "./models";
+import { PetDTO, UserDTO, TodoDTO } from "./models";
 import domain from "../domain/domain";
 
 module.exports = {

@@ -2,6 +2,9 @@ import db from '../database/db';
 import { TodoSize } from '../database/db';
 import { PetDomain, TodoDomain, UserDomain } from './models';
 
+//TODO Calculate current happiness function
+//TODO Filter todo for completed = false
+
 interface domain {
     //users
     getAllUsers: () => Promise<UserDomain[] | Error>,
