@@ -30,9 +30,34 @@ interface domain {
     getPetById: (pet_id: number) => Promise<PetDomain | Error>;
     updatePetById: (pet_id: number, name: string) => Promise<string | Error>;
     deletePetById: (pet_id: number) => Promise<string | Error>;
+
+    calculateCurrentHappiness: (pet_id: number) => Promise<number | { status: number, message: string}>;
 }
 
 const domain: domain = {
+    calculateCurrentHappiness: async function (pet_id: number) {
+        const dbPet = await db.getPetById(pet_id);
+        if (Object.keys(dbPet).length === 0) {
+            return { status: 404, message: 'No pet found'};
+        }
+        if (dbPet instanceof Error) {
+            return { status: 500, message: "Internal Server Error"}
+        }
+        const happiness = dbPet.happiness;
+        const happiness_last_updated = dbPet.happiness_last_updated;
+        const happiness_reduction_rate = dbPet.happiness_reduction_rate;
+        const time_now = Date.now();
+        //ms -> h
+        const elapsed_time_ms = time_now - happiness_last_updated;
+        const elapsed_time_s = elapsed_time_ms / 1000;
+        const elapsed_time_min = elapsed_time_s / 60;
+        const elapsed_time_h = elapsed_time_min / 60;
+        //calc lost happiness
+        const lost_happiness = elapsed_time_h * happiness_reduction_rate;
+        const current_happiness = happiness - lost_happiness;
+        return current_happiness;
+    },
+
     getAllUsers: async function () {
         const allUsers = await db.getAllUsers();
         return allUsers;

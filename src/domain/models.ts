@@ -25,6 +25,7 @@ constructor(
     public xp: number,
     public happiness: number,
     public happiness_reduction_rate: number,
-    public happiness_last_updated: string
+    public happiness_last_updated: number,
+    public current_happiness?: number
 ) {}
 }

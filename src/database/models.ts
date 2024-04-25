@@ -7,7 +7,7 @@ export class TodoDB {
         public title: string,
         public size: TodoSize,
         public completed: boolean,
-        public created_at: string
+        public created_at: number
     ) {}
 }
 
@@ -15,7 +15,7 @@ export class UserDB {
     constructor(
         public id: number, 
         public username: string, 
-        public created_at: string
+        public created_at: number
     ) {}
 }
 
@@ -27,7 +27,7 @@ export class PetDB {
         public xp: number,
         public happiness: number,
         public happiness_reduction_rate: number,
-        public happiness_last_updated: string,
-        public created_at: string
+        public happiness_last_updated: number,
+        public created_at: number
     ) {}
 }
