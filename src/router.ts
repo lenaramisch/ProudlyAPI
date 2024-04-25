@@ -1,6 +1,6 @@
 import express, {Request, Response} from 'express';
+import * as users from './handler/user';
 
-const users = require('./handler/user');
 const pets = require('./handler/pet');
 const todos = require('./handler/todo');
 
@@ -9,7 +9,6 @@ module.exports = function(app: any) {
         app.get('/', async (req: Request, res: Response) => {
             res.status(200).send("This is working!");
         }),
-    // TODO add todo routes
 
     // User routes
     app.get('/users', async (req: Request, res: Response) => {
@@ -42,6 +41,36 @@ module.exports = function(app: any) {
         res.status(result.status).send(result.message);
     })
 
-    //TODO add pet Routes
+    //to-do routes
+
+    //TODO add todo routes:
+    // /to-do routes:
+    //get all todos
+    //post new todo
+
+    // /to-do/id routes:
+    //get todo by id
+    //put todo by id
+    //delete todo by id
+
+    // /to-do/user/userid routes:
+    //delete todos by user id
+    //get todos by user id
+
+    //pet routes
+
+    //TODO add pet routes:
+    // /pets routes:
+    //get all pets
+    //post new pet
+
+    // /pets/user/userid routes:
+    //delete pet by user id
+    //get pet by user id
+
+    // /pets/petId routes:
+    //delete pet by petID
+    //put pet by petID
+    //get pet by petID
     
 };
