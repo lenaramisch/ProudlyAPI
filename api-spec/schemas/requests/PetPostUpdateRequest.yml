@@ -9,4 +9,3 @@ properties:
     example: 2
 required:
   - name
-  - userid

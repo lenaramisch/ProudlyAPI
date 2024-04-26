@@ -12,6 +12,5 @@ properties:
     enum: [small, medium, big]
     example: small
 required:
-  - user_id
   - title
   - size

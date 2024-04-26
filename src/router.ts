@@ -1,8 +1,7 @@
 import express, {Request, Response} from 'express';
 import * as users from './handler/user';
-
-const pets = require('./handler/pet');
-const todos = require('./handler/todo');
+import * as todos from './handler/todo';
+import * as pets from './handler/pet';
 
 module.exports = function(app: any) {
     //Home route:
@@ -42,35 +41,90 @@ module.exports = function(app: any) {
     })
 
     //to-do routes
+    app.get('/todos', async (req: Request, res: Response) => {
+        const result = await todos.getAllTodos();
+        res.status(result.status).send(result.data || result.message);
+    }),
 
-    //TODO add todo routes:
-    // /to-do routes:
-    //get all todos
-    //post new todo
+    app.get('/todos/:id', async (req: Request, res: Response) => {
+        const todo_id = parseInt(req.params.id as string)
+        const result = await todos.getTodoById(todo_id);
+        res.status(result.status).send(result.data || result.message);
+    }),
 
-    // /to-do/id routes:
-    //get todo by id
-    //put todo by id
-    //delete todo by id
+    app.put('/todos/:id', async (req: Request, res: Response) => {
+        const todo_id = parseInt(req.params.id as string)
+        const { title, size } = req.body;
+        const result = await todos.updateTodoById(todo_id, title, size);
+        res.status(result.status).send(result.message);
+    }),
 
-    // /to-do/user/userid routes:
-    //delete todos by user id
-    //get todos by user id
+    app.delete('/todos/:id', async (req: Request, res: Response) => {
+        const todo_id = parseInt(req.params.id as string)
+        const result = await todos.deleteTodoById(todo_id);
+        res.status(result.status).send(result.message);
+    }),
+
+    app.post('/todos/user/:userid', async (req: Request, res: Response) => {
+        const user_id = parseInt(req.params.userid as string)
+        const { title, size } = req.body;
+        const result = await todos.addTodo(user_id, title, size);
+        res.status(result.status).send(result.message);
+    }),
+
+    app.delete('/todos/user/:userid', async (req: Request, res: Response) => {
+        const user_id = parseInt(req.params.userid as string)
+        const result = await todos.deleteTodosByUserId(user_id);
+        res.status(result.status).send(result.message);
+    }),
+
+    app.get('/todos/user/:userid', async (req: Request, res: Response) => {
+        const user_id = parseInt(req.params.userid as string)
+        const result = await todos.getTodosByUserId(user_id);
+        res.status(result.status).send(result.data || result.message);
+    }),
 
     //pet routes
+    app.get('/pets', async (req: Request, res: Response) => {
+        const result = await pets.getAllPets();
+        res.status(result.status).send(result.data || result.message);
+    }),
 
-    //TODO add pet routes:
-    // /pets routes:
-    //get all pets
-    //post new pet
+    app.post('/pets/user/:userid', async (req: Request, res: Response) => {
+        const user_id = parseInt(req.params.userid as string)
+        const { name } = req.body;
+        const result = await pets.addPet(user_id, name);
+        res.status(result.status).send(result.message);
+    }),
 
-    // /pets/user/userid routes:
-    //delete pet by user id
-    //get pet by user id
+    app.delete('/pets/user/:userid', async (req: Request, res: Response) => {
+        const user_id = parseInt(req.params.userid as string)
+        const result = await pets.deletePetByUserId(user_id);
+        res.status(result.status).send(result.message);
+    }),
 
-    // /pets/petId routes:
-    //delete pet by petID
-    //put pet by petID
-    //get pet by petID
-    
+    app.get('/pets/user/:userid', async (req: Request, res: Response) => {
+        const user_id = parseInt(req.params.userid as string)
+        const result = await pets.getPetByUserId(user_id);
+        res.status(result.status).send(result.data || result.message);
+    }),
+
+    app.get('/pets/:id', async (req: Request, res: Response) => {
+        const pet_id = parseInt(req.params.id as string)
+        const result = await pets.getPetById(pet_id);
+        res.status(result.status).send(result.data || result.message);
+    }),
+
+    app.put('/pets/:id', async (req: Request, res: Response) => {
+        const pet_id = parseInt(req.params.id as string)
+        const { name } = req.body;
+        const result = await pets.updatePetById(pet_id, name);
+        res.status(result.status).send(result.message);
+    }),
+
+    app.delete('/pets/:id', async (req: Request, res: Response) => {
+        const pet_id = parseInt(req.params.id as string)
+        const result = await pets.deletePetById(pet_id);
+        res.status(result.status).send(result.message);
+    })
 };
