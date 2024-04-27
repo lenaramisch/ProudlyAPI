@@ -22,8 +22,8 @@ module.exports = function(app: any) {
     }),
     
     app.get('/users/:id', async (req: Request, res: Response) => {
-        const id = parseInt(req.params.id as string)
-        const result = await users.getUserById(id);
+        const user_id = parseInt(req.params.id as string)
+        const result = await users.getUserById(user_id);
         res.status(result.status).send(result.data || result.message);
     }),
     

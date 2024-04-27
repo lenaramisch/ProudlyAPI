@@ -18,7 +18,7 @@ export async function getAllPets() {
                 const dtoPet = domainPets.map((pet: PetDomain) => new PetDTO(
                     pet.id, pet.user_id, pet.name, pet.xp, current_happiness
                 ));
-                dtoPets.push(dtoPet);
+                dtoPets.push(dtoPet[0]);
             }
             else {
                 console.log(`Failed to calculate happiness for pet with ID ${pet.id}`);
@@ -51,7 +51,7 @@ export async function getPetByUserId(user_id: number) {
         if (domainPet instanceof Error) {
             return { status: 500, message: "Internal Server Error"}
         }
-        const current_happiness = domain.calculateCurrentHappiness(domainPet.id);
+        const current_happiness = await domain.calculateCurrentHappiness(domainPet.id);
         if (typeof(current_happiness) === 'number') {
             const dtoPet = new PetDTO(
                 domainPet.id, domainPet.user_id, domainPet.name, 
@@ -94,7 +94,7 @@ export async function getPetById(pet_id: number) {
         if (domainPet instanceof Error) {
             return { status: 500, message: "Internal Server Error"}
         }
-        const current_happiness = domain.calculateCurrentHappiness(domainPet.id);
+        const current_happiness = await domain.calculateCurrentHappiness(domainPet.id);
             if (typeof(current_happiness) === 'number') {
                 const dtoPet = new PetDTO(
                     domainPet.id, domainPet.user_id, domainPet.name, 

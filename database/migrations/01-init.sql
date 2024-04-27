@@ -1,3 +1,5 @@
+-- +migrate Up
+
 CREATE TYPE "todo_size" AS ENUM (
   'small',
   'medium',

@@ -7,7 +7,7 @@ import { TodoDB, UserDB, PetDB } from './models';
 const getAllTodosQuery: string = 'SELECT * FROM todos';
 const addTodoQuery: string = 'INSERT INTO todos(user_id, title, size) VALUES($1, $2, $3)';
 const getTodoByIdQuery: string = 'SELECT * FROM todos WHERE id = $1';
-const updateTodoByIdQuery: string = 'UPDATE todo SET title = $2, size = $3 WHERE id = $1';
+const updateTodoByIdQuery: string = 'UPDATE todos SET title = $2, size = $3 WHERE id = $1';
 const deleteTodoByIdQuery: string = 'DELETE FROM todos WHERE id = $1';
 const getTodosByUserIdQuery: string = 'SELECT * FROM todos WHERE user_id = $1';
 const deleteTodosByUserIdQuery: string = 'DELETE FROM todos WHERE user_id = $1';
@@ -37,7 +37,7 @@ export enum TodoSize {
 interface UserRow {
     id: number,
     username: string,
-    created_at: string
+    created_at: number
 }
 
 interface PetRow {
@@ -47,8 +47,8 @@ interface PetRow {
     xp: number,
     happiness: number,
     happiness_reduction_rate: number,
-    happiness_last_updated: string,
-    created_at: string
+    happiness_last_updated: number,
+    created_at: number
 }
 
 interface TodoRow {
@@ -57,7 +57,7 @@ interface TodoRow {
     title: string,
     size: TodoSize,
     completed: boolean,
-    created_at: string
+    created_at: number
 }
 
 const pool = new Pool({
@@ -70,7 +70,6 @@ const pool = new Pool({
 });
 
 interface Database {
-    //TODO check any[] as return type
     query: (text: string, params?: any[]) => Promise<{ rows: any[] }>;
 
     //user 
@@ -99,7 +98,6 @@ interface Database {
     deletePetById: (pet_id: number) => Promise<string | Error>;
 }
 
-//TODO add db functions for todo
 const database: Database = {
     query: (text, params) => pool.query(text, params),
     getAllUsers: async function () {
@@ -125,7 +123,7 @@ const database: Database = {
         try {
             const dbResult = await pool.query(getUserByIdQuery, [user_id]);
             const dbModelUser = dbResult.rows.map((row: UserRow) => new UserDB(row.id, row.username, row.created_at));
-            return dbModelUser.map((dbUser: UserDB) => new UserDomain(dbUser.id, dbUser.username))
+            return dbModelUser.map((dbUser: UserDB) => new UserDomain(dbUser.id, dbUser.username))[0]
         } catch (error: any) {
             return error
         }
@@ -181,7 +179,7 @@ const database: Database = {
             return dbModelPet.map((dbPet: PetDB) => new PetDomain(
                 dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
                 dbPet.happiness, dbPet.happiness_reduction_rate, 
-                dbPet.happiness_last_updated))
+                dbPet.happiness_last_updated))[0]
         } catch (error: any) {
             return error
         }
@@ -204,7 +202,7 @@ const database: Database = {
             return dbModelPet.map((dbPet: PetDB) => new PetDomain(
                 dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
                 dbPet.happiness, dbPet.happiness_reduction_rate, 
-                dbPet.happiness_last_updated))
+                dbPet.happiness_last_updated))[0]
         } catch (error: any) {
             return error
         }
@@ -256,7 +254,7 @@ const database: Database = {
             ));
             return dbModelTodo.map((dbTodo: TodoDB) => new TodoDomain(
                 dbTodo.id, dbTodo.user_id, dbTodo.title, dbTodo.size, dbTodo.completed
-            ));
+            ))[0];
         } catch (error: any) {
             return error
         }

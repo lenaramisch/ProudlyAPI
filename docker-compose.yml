@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   db:
-    container_name: cartmanager_db_ts
+    container_name: proudly_db_ts
     image: postgres:alpine3.18
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -12,9 +12,22 @@ services:
       - ./postgres-data:/data/postgres
     ports:
       - "5432:5432"
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'pg_isready',
+          '-U',
+          '${POSTGRES_USER:-postgres}',
+          '-d',
+          'postgres',
+        ]
+      interval: 3s
+      timeout: 5s
+      retries: 5
 
   dbmigration:
-    container_name: cartmanager_migration_ts
+    container_name: proudly_migration_ts
     build:
       context: .
       dockerfile: ./database/build/migrate.dockerfile

@@ -2,7 +2,7 @@ import db from '../database/db';
 import { TodoSize } from '../database/db';
 import { PetDomain, TodoDomain, UserDomain } from './models';
 
-//TODO Calculate current happiness function
+//TODO Give todos effect on happiness based on todo size!
 //TODO Filter todo for completed = false
 
 interface domain {
@@ -44,9 +44,10 @@ const domain: domain = {
             return { status: 500, message: "Internal Server Error"}
         }
         const happiness = dbPet.happiness;
-        const happiness_last_updated = dbPet.happiness_last_updated;
+        const happiness_last_updated = dbPet.happiness_last_updated.valueOf();
+        //Sat Apr 27 2024 13:39:33 GMT+0200 (Central European Summer Time)
         const happiness_reduction_rate = dbPet.happiness_reduction_rate;
-        const time_now = Date.now();
+        const time_now = Date.now().valueOf();
         //ms -> h
         const elapsed_time_ms = time_now - happiness_last_updated;
         const elapsed_time_s = elapsed_time_ms / 1000;
@@ -54,7 +55,10 @@ const domain: domain = {
         const elapsed_time_h = elapsed_time_min / 60;
         //calc lost happiness
         const lost_happiness = elapsed_time_h * happiness_reduction_rate;
-        const current_happiness = happiness - lost_happiness;
+        let current_happiness = happiness - lost_happiness;
+        if (current_happiness < 0) {
+            current_happiness = 0;
+        }
         return current_happiness;
     },
 
