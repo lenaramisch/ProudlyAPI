@@ -7,7 +7,7 @@ enum todo_size {
 Table users {
   id integer [primary key, increment]
   username varchar
-  created_at timestamp [default: `now()`]
+  created_at timestamptz [default: `now()`]
 }
 
 Table pets {
@@ -17,8 +17,8 @@ Table pets {
   xp integer
   happiness integer
   happiness_reduction_rate integer
-  happiness_last_updated timestamp
-  created_at timestamp [default: `now()`]
+  happiness_last_updated timestamptz
+  created_at timestamptz [default: `now()`]
 }
 
 Table todos {
@@ -27,7 +27,7 @@ Table todos {
   title varchar
   size todo_size
   completed boolean [default: false]
-  created_at timestamp [default: `now()`]
+  created_at timestamptz [default: `now()`]
 }
 
 ref: pets.user_id > users.id

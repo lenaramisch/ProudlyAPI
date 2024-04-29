@@ -84,6 +84,19 @@ module.exports = function(app: any) {
         res.status(result.status).send(result.data || result.message);
     }),
 
+    app.get('/todos/user/active/:userid', async (req: Request, res: Response) => {
+        const user_id = parseInt(req.params.userid as string);
+        const result = await todos.getActiveTodosByUserId(user_id);
+        res.status(result.status).send(result.data || result.message);
+    }),
+
+    app.put('/todos/complete/:id', async (req: Request, res: Response) => {
+        console.log("Put request to complete todo arrived!")
+        const todo_id = parseInt(req.params.id as string);
+        const result = await todos.completeTodoById(todo_id);
+        res.status(result.status).send(result.message);
+    }),
+
     //pet routes
     app.get('/pets', async (req: Request, res: Response) => {
         const result = await pets.getAllPets();

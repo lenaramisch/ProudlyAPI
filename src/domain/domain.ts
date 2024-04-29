@@ -1,9 +1,29 @@
+import { time } from 'console';
 import db from '../database/db';
 import { TodoSize } from '../database/db';
 import { PetDomain, TodoDomain, UserDomain } from './models';
 
-//TODO Give todos effect on happiness based on todo size!
-//TODO Filter todo for completed = false
+//TODO Give todos effect on happiness based on todo size and update happiness_last_updated
+//mark todo as completed function
+/*completeTodoById(todo_id) {
+    todo = await getTodoById(todo_id) -> user_id
+        query: completeTodoById = "UPDATE todos SET completed = true WHERE id = todo_id"
+    user_id = todo.user_id
+    size = todo.size
+    switch case (size: small = increaseValue: 15, medium = 25, big = 50)
+        -> IncreaseValue depends on todo_size
+    increasePetsHappiness(user_id, increaseValue);
+    }
+    
+    increasePetsHappiness(user_id, increaseValue) {
+        pet = await getPetByUserId(user_id)
+        oldHappiness = pet.happiness
+        newTime = Date.now().valueOf()
+        newHappiness = pet.happiness + increase Value
+        query: increasePetsHappiness = "
+        UPDATE pets SET happiness = newHappiness, happiness_last_updated = newTime WHERE user_id = user_id'"
+    }
+}*/
 
 interface domain {
     //users
@@ -21,6 +41,8 @@ interface domain {
     deleteTodoById: (todo_id: number) => Promise<string | Error>;
     getTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>;
     deleteTodosByUserId: (user_id: number) => Promise<string | Error>;
+    completeTodoById: (todo_id: number) => Promise<string | Error>;
+    getActiveTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>;
 
     //pets
     getAllPets: () => Promise<PetDomain[] | Error >;
@@ -44,12 +66,17 @@ const domain: domain = {
             return { status: 500, message: "Internal Server Error"}
         }
         const happiness = dbPet.happiness;
-        const happiness_last_updated = dbPet.happiness_last_updated.valueOf();
-        //Sat Apr 27 2024 13:39:33 GMT+0200 (Central European Summer Time)
+        const happiness_last_updated = dbPet.happiness_last_updated; // UTC
         const happiness_reduction_rate = dbPet.happiness_reduction_rate;
-        const time_now = Date.now().valueOf();
+        var date = new Date();
+        var now_utc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
+                        date.getUTCDate(), date.getUTCHours(),
+                        date.getUTCMinutes(), date.getUTCSeconds());
+
+        console.log("Current time in UTC: " + new Date(now_utc))
+
         //ms -> h
-        const elapsed_time_ms = time_now - happiness_last_updated;
+        const elapsed_time_ms = now_utc - happiness_last_updated.valueOf();
         const elapsed_time_s = elapsed_time_ms / 1000;
         const elapsed_time_min = elapsed_time_s / 60;
         const elapsed_time_h = elapsed_time_min / 60;
@@ -155,6 +182,39 @@ const domain: domain = {
     deleteTodosByUserId: async function (user_id: number) {
         const deleteTodosResult = db.deleteTodosByUserId(user_id);
         return deleteTodosResult;
+    },
+
+    getActiveTodosByUserId: async function (user_id: number) {
+        const activeTodos = db.getActiveTodosByUserId(user_id);
+        return activeTodos;
+    },
+
+    completeTodoById: async function (todo_id: number) {
+        try {
+            const todo = await db.getTodoById(todo_id);
+            console.log("In domain! todo is: " + JSON.stringify(todo))
+            if (todo instanceof TodoDomain) {
+                const user_id = todo.user_id;
+                const todo_size = todo.size;
+                let increaseRate: number;
+                switch (todo_size) {
+                    case TodoSize.Small:
+                        increaseRate = 15;
+                        break;
+                    case TodoSize.Medium:
+                        increaseRate = 25;
+                        break;
+                    case TodoSize.Big:
+                        increaseRate = 50;
+                        break;
+                }
+                db.increasePetsHappiness(user_id, increaseRate)
+            } 
+            const completeTodoResult = db.completeTodoById(todo_id);
+            return completeTodoResult;
+        } catch (error: any) {
+            return error;
+        }
     }
 };
 

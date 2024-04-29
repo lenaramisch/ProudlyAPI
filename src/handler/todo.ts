@@ -3,6 +3,41 @@ import { TodoDTO } from "./models";
 import { TodoSize } from "../database/db";
 import domain from "../domain/domain";
 
+export async function completeTodoById(todo_id: number) {
+    try {
+        const domainTodo = await domain.getTodoById(todo_id);
+        if (Object.keys(domainTodo).length === 0) {
+            return { status: 404, message: 'No todo found for todo_id ' + todo_id};
+        }
+        if (domainTodo instanceof Error) {
+            return { status: 500, message: "Internal Server Error"}
+        }
+        await domain.completeTodoById(todo_id);
+        return { status: 200, message: 'Marked todo as completed' }
+    } catch (error: any) {
+        console.error(error);
+        return { status: 500, message: 'Internal Server Error' };
+    } 
+}
+
+export async function getActiveTodosByUserId(user_id: number) {
+    try {
+        const activeDomainTodos = await domain.getActiveTodosByUserId(user_id);
+        if (Object.keys(activeDomainTodos).length === 0) {
+            return { status: 404, message: 'No active todos for user with id '+ user_id +' found'};
+        }
+        if (activeDomainTodos instanceof Error) {
+            return { status: 500, message: "Internal Server Error"}
+        }
+        const activeDtoTodos = activeDomainTodos.map((todo: TodoDomain) => new TodoDTO(
+            todo.id, todo.user_id, todo.title, todo.size
+        ));
+        return { status: 200, data: activeDtoTodos };
+    } catch (err: any) {
+        console.error(err);
+        return { status: 500, message: 'Internal Server Error' };
+    }
+}
 
 export async function getAllTodos() {
     try {

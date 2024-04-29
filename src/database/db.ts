@@ -11,6 +11,8 @@ const updateTodoByIdQuery: string = 'UPDATE todos SET title = $2, size = $3 WHER
 const deleteTodoByIdQuery: string = 'DELETE FROM todos WHERE id = $1';
 const getTodosByUserIdQuery: string = 'SELECT * FROM todos WHERE user_id = $1';
 const deleteTodosByUserIdQuery: string = 'DELETE FROM todos WHERE user_id = $1';
+const completeTodoByIdQuery: string = "UPDATE todos SET completed = true WHERE id = $1";
+const getActiveTodosByUserIdQuery: string = 'SELECT * from todos WHERE user_id = $1 AND completed = false';
 
 //user querys
 const getAllUsersQuery: string = 'SELECT * FROM users';
@@ -27,6 +29,7 @@ const getPetByUserIdQuery: string = 'SELECT * FROM pets WHERE user_id = $1';
 const deletePetByIdQuery: string = 'DELETE FROM pets WHERE id = $1';
 const updatePetByIdQuery: string = 'UPDATE pets SET name = $2 WHERE id= $1';
 const getPetByIdQuery: string = 'SELECT * FROM pets WHERE id = $1';
+const increasePetsHappinessQuery: string = 'UPDATE pets SET happiness = $2, happiness_last_updated = NOW() WHERE user_id = $1';
 
 export enum TodoSize {
     Small = "small",
@@ -37,7 +40,7 @@ export enum TodoSize {
 interface UserRow {
     id: number,
     username: string,
-    created_at: number
+    created_at: Date
 }
 
 interface PetRow {
@@ -47,8 +50,8 @@ interface PetRow {
     xp: number,
     happiness: number,
     happiness_reduction_rate: number,
-    happiness_last_updated: number,
-    created_at: number
+    happiness_last_updated: Date,
+    created_at: Date
 }
 
 interface TodoRow {
@@ -57,7 +60,7 @@ interface TodoRow {
     title: string,
     size: TodoSize,
     completed: boolean,
-    created_at: number
+    created_at: Date
 }
 
 const pool = new Pool({
@@ -87,6 +90,8 @@ interface Database {
     deleteTodoById: (todo_id: number) => Promise<string | Error>;
     getTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>;
     deleteTodosByUserId: (user_id: number) => Promise<string | Error>;
+    completeTodoById: (todo_id: number) => Promise<string | Error>;
+    getActiveTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>;
 
     //pet
     getAllPets: () => Promise<PetDomain[] | Error >;
@@ -96,6 +101,7 @@ interface Database {
     getPetById: (pet_id: number) => Promise<PetDomain | Error>;
     updatePetById: (pet_id: number, name: string) => Promise<string | Error>;
     deletePetById: (pet_id: number) => Promise<string | Error>;
+    increasePetsHappiness: (user_id: number, increaseRate: number) => Promise<string | Error>;
 }
 
 const database: Database = {
@@ -152,7 +158,11 @@ const database: Database = {
                 row.id, row.user_id, row.name, row.xp, row.happiness, 
                 row.happiness_reduction_rate, row.happiness_last_updated, 
                 row.created_at))
-            // map db model carts to domain model carts
+
+            for (let index = 0; index < dbModelPet.length; index++) {
+                const pet = dbModelPet[index];
+                console.log("DBPet is: " + JSON.stringify(pet))
+            }
             return dbModelPet.map((dbPet: PetDB) => new PetDomain(
                 dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
                 dbPet.happiness, dbPet.happiness_reduction_rate, 
@@ -176,6 +186,7 @@ const database: Database = {
                 row.id, row.user_id, row.name, row.xp, row.happiness, 
                 row.happiness_reduction_rate, row.happiness_last_updated, 
                 row.created_at));
+            
             return dbModelPet.map((dbPet: PetDB) => new PetDomain(
                 dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
                 dbPet.happiness, dbPet.happiness_reduction_rate, 
@@ -199,6 +210,7 @@ const database: Database = {
                 row.id, row.user_id, row.name, row.xp, row.happiness, 
                 row.happiness_reduction_rate, row.happiness_last_updated, 
                 row.created_at));
+
             return dbModelPet.map((dbPet: PetDB) => new PetDomain(
                 dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
                 dbPet.happiness, dbPet.happiness_reduction_rate, 
@@ -223,13 +235,52 @@ const database: Database = {
             return error
         }
     },
+    increasePetsHappiness: async function (user_id: number, increaseRate: number) {
+        try {
+            const pet = await this.getPetByUserId(user_id);
+            console.log("In db... pet is: " + JSON.stringify(pet))
+            if (pet instanceof PetDomain) {
+                const oldHappiness = pet.happiness;
+                let newHappiness = oldHappiness + increaseRate;
+                if (newHappiness > 100) {
+                    newHappiness = 100
+                } 
+                // current time to database timestamp tz
+                pool.query(increasePetsHappinessQuery, [user_id, newHappiness])
+                return "ok"
+            }
+        } catch (error: any) {
+            return error
+        }
+    },
+    getActiveTodosByUserId: async function(user_id: number) {
+        try {
+            const dbResult = await pool.query(getActiveTodosByUserIdQuery, [user_id]);
+            const dbModelTodo = dbResult.rows.map((row: TodoRow) => new TodoDB(
+                row.id, row.user_id, row.title, row.size, row.completed, row.created_at
+            ));
+            return dbModelTodo.map((dbTodo: TodoDB) => new TodoDomain(
+                dbTodo.id, dbTodo.user_id, dbTodo.title, dbTodo.size, dbTodo.completed
+            ));
+        } catch (error: any) {
+            return error
+        }
+    },
+    completeTodoById: async function (todo_id: number) {
+        try {
+            pool.query(completeTodoByIdQuery, [todo_id])
+            return "ok"
+        } catch (error: any) {
+            return error
+        }
+    },
     getAllTodos: async function () {
         try{
             const dbResult = await pool.query(getAllTodosQuery);
             // map raw QueryResult to db model classes
             const dbModelTodo = dbResult.rows.map((row: TodoRow) => new TodoDB(
                 row.id, row.user_id, row.title, row.size, row.completed, row.created_at
-            ))
+            ));
             // map db model carts to domain model carts
             return dbModelTodo.map((dbTodo: TodoDB) => new TodoDomain(
                 dbTodo.id, dbTodo.user_id, dbTodo.title, dbTodo.size, dbTodo.completed

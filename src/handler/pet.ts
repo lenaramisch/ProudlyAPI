@@ -5,20 +5,28 @@ import domain from "../domain/domain";
 export async function getAllPets() {
     try {
         const domainPets = await domain.getAllPets();
+        
         if (Object.keys(domainPets).length === 0) {
             return { status: 404, message: 'No pets found'};
         }
         if (domainPets instanceof Error) {
             return { status: 500, message: "Internal Server Error"}
         }
-        const dtoPets = [];
-        for (const pet of domainPets) {
+        for (let index = 0; index < domainPets.length; index++) {
+            const pet = domainPets[index];
+            console.log("DomainPet is: " + JSON.stringify(pet))
+        }
+        let dtoPets = [];
+        for (let index = 0; index < domainPets.length; index++) {
+            let pet = domainPets[index];
+            console.log("Currently handling pet ID:" + pet.id)
             const current_happiness = await domain.calculateCurrentHappiness(pet.id);
             if (typeof(current_happiness) === 'number') {
-                const dtoPet = domainPets.map((pet: PetDomain) => new PetDTO(
+                let dtoPet = new PetDTO(
                     pet.id, pet.user_id, pet.name, pet.xp, current_happiness
-                ));
-                dtoPets.push(dtoPet[0]);
+                );
+                dtoPets.push(dtoPet);
+                console.log("Pushed pet: " + JSON.stringify(dtoPet))
             }
             else {
                 console.log(`Failed to calculate happiness for pet with ID ${pet.id}`);
