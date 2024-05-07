@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const bcrypt = require("bcrypt")
 import { UserDomain, PetDomain, TodoDomain } from '../domain/models';
 import { TodoDB, UserDB, PetDB } from './models';
 
@@ -16,7 +17,7 @@ const getActiveTodosByUserIdQuery: string = 'SELECT * from todos WHERE user_id =
 
 //user querys
 const getAllUsersQuery: string = 'SELECT * FROM users';
-const addUserQuery: string = 'INSERT INTO users(username) VALUES($1)';
+const addUserQuery: string = 'INSERT INTO users(username, password) VALUES($1, $2)';
 const getUserByIdQuery: string = 'SELECT * FROM users WHERE id = $1';
 const updateUserByIdQuery: string = 'UPDATE users SET username = $2 WHERE id = $1';
 const deleteUserByIdQuery: string = 'DELETE FROM users WHERE id = $1';
@@ -40,6 +41,7 @@ export enum TodoSize {
 interface UserRow {
     id: number,
     username: string,
+    password: string,
     created_at: Date
 }
 
@@ -77,7 +79,7 @@ interface Database {
 
     //user 
     getAllUsers: () => Promise<UserDomain[] | Error>;
-    addUser: (username: string) => Promise<string | Error>;
+    addUser: (username: string, password: string) => Promise<string | Error>;
     getUserById: (user_id: number) => Promise<UserDomain | Error>;
     updateUserById: (user_id: number, username: string) => Promise<string | Error>;
     deleteUserById: (user_id: number) => Promise<string | Error>;
@@ -110,16 +112,17 @@ const database: Database = {
         try{
             const dbResult = await pool.query(getAllUsersQuery);
             // map raw QueryResult to db model classes
-            const dbModelUser = dbResult.rows.map((row: UserRow) => new UserDB(row.id, row.username, row.created_at))
+            const dbModelUser = dbResult.rows.map((row: UserRow) => new UserDB(row.id, row.username, row.password, row.created_at))
             // map db model carts to domain model carts
-            return dbModelUser.map((dbUser: UserDB) => new UserDomain(dbUser.id, dbUser.username));
+            return dbModelUser.map((dbUser: UserDB) => new UserDomain(dbUser.id, dbUser.username, dbUser.password));
         } catch (error: any) {
             return error
         }
     },
-    addUser: async function (username: string) {
+    addUser: async function (username: string, password: string) {
         try {
-            pool.query(addUserQuery, [username]);
+            console.log("Here in db layer! The password is: " + password)
+            pool.query(addUserQuery, [username, password]);
             return "ok"
         } catch (error: any) {
             return error
@@ -128,8 +131,8 @@ const database: Database = {
     getUserById: async function (user_id: number) {
         try {
             const dbResult = await pool.query(getUserByIdQuery, [user_id]);
-            const dbModelUser = dbResult.rows.map((row: UserRow) => new UserDB(row.id, row.username, row.created_at));
-            return dbModelUser.map((dbUser: UserDB) => new UserDomain(dbUser.id, dbUser.username))[0]
+            const dbModelUser = dbResult.rows.map((row: UserRow) => new UserDB(row.id, row.username, row.password, row.created_at));
+            return dbModelUser.map((dbUser: UserDB) => new UserDomain(dbUser.id, dbUser.username, dbUser.password))[0]
         } catch (error: any) {
             return error
         }

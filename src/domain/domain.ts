@@ -1,34 +1,13 @@
-import { time } from 'console';
+import { parseArgs } from 'util';
 import db from '../database/db';
 import { TodoSize } from '../database/db';
+import bcrypt from 'bcrypt'
 import { PetDomain, TodoDomain, UserDomain } from './models';
-
-//TODO Give todos effect on happiness based on todo size and update happiness_last_updated
-//mark todo as completed function
-/*completeTodoById(todo_id) {
-    todo = await getTodoById(todo_id) -> user_id
-        query: completeTodoById = "UPDATE todos SET completed = true WHERE id = todo_id"
-    user_id = todo.user_id
-    size = todo.size
-    switch case (size: small = increaseValue: 15, medium = 25, big = 50)
-        -> IncreaseValue depends on todo_size
-    increasePetsHappiness(user_id, increaseValue);
-    }
-    
-    increasePetsHappiness(user_id, increaseValue) {
-        pet = await getPetByUserId(user_id)
-        oldHappiness = pet.happiness
-        newTime = Date.now().valueOf()
-        newHappiness = pet.happiness + increase Value
-        query: increasePetsHappiness = "
-        UPDATE pets SET happiness = newHappiness, happiness_last_updated = newTime WHERE user_id = user_id'"
-    }
-}*/
 
 interface domain {
     //users
     getAllUsers: () => Promise<UserDomain[] | Error>,
-    addUser: (username: string) => Promise<string | Error>,
+    addUser: (username: string, password: string) => Promise<string | Error>,
     getUserById: (user_id: number) => Promise<UserDomain | Error>,
     updateUserById: (user_id: number, username: string) => Promise<string | Error>,
     deleteUserById: (user_id: number) => Promise<string | Error>,
@@ -54,9 +33,30 @@ interface domain {
     deletePetById: (pet_id: number) => Promise<string | Error>;
 
     calculateCurrentHappiness: (pet_id: number) => Promise<number | { status: number, message: string}>;
+    encryptPassword: (password: string) => Promise<string>;
+    validatePassword: (userhash: string, password: string) => Promise<boolean>;
+
 }
 
 const domain: domain = {
+    encryptPassword: async function (password: string) {
+        try {
+            return bcrypt.hash(password, /*salt rounds: */10)
+        }
+        catch (err: any) {
+            return err.message;
+        }
+    },
+    
+    validatePassword: async function (userhash: string, password: string) {
+        try {
+            return bcrypt.compare(password, userhash)
+        }
+        catch (err: any) {
+            return err.message;
+        }    
+    },
+
     calculateCurrentHappiness: async function (pet_id: number) {
         const dbPet = await db.getPetById(pet_id);
         if (Object.keys(dbPet).length === 0) {
@@ -94,8 +94,10 @@ const domain: domain = {
         return allUsers;
     },
 
-    addUser: async function (username: string) {
-        const addUserResult = await db.addUser(username);
+    addUser: async function (username: string, password: string) {
+        const passwordHash = await this.encryptPassword(password);
+        const addUserResult = await db.addUser(username, passwordHash);
+        console.log("Here in domain layer! The password is: " + passwordHash)
         return addUserResult;
     },
 

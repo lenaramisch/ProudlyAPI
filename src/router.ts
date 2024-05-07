@@ -16,8 +16,8 @@ module.exports = function(app: any) {
     }),
     
     app.post('/users', async (req: Request, res: Response) => {
-        const { username } = req.body;
-        const result = await users.addUser(username);
+        const { username, password } = req.body;
+        const result = await users.addUser(username, password);
         res.status(result.status).send(result.message);
     }),
     

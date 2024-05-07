@@ -15,6 +15,7 @@ export class UserDB {
     constructor(
         public id: number, 
         public username: string, 
+        public password: string,
         public created_at: Date
     ) {}
 }

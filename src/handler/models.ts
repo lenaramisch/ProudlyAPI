@@ -3,7 +3,8 @@ import { TodoSize } from "../database/db";
 export class UserDTO {
 constructor(
     public id: number,
-    public username: string
+    public username: string,
+    public password: string
 ) {}
 }
 

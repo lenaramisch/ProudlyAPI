@@ -12,7 +12,7 @@ export async function getAllUsers() {
         if (domainUsers instanceof Error) {
             return { status: 500, message: "Internal Server Error"}
         }
-        const dtoUsers = domainUsers.map((user: UserDomain) => new UserDTO(user.id, user.username))
+        const dtoUsers = domainUsers.map((user: UserDomain) => new UserDTO(user.id, user.username, user.password))
         return { status: 200, data: dtoUsers };
     } catch (err: any) {
         console.error(err);
@@ -20,9 +20,9 @@ export async function getAllUsers() {
     }
 }
 
-export async function addUser (username: string) {
+export async function addUser (username: string, password: string) {
     try {
-        await domain.addUser(username);
+        await domain.addUser(username, password);
         return { status: 201, message: `Added user with name ${username}` };
     } catch (err: any) {
         console.error(err);
@@ -39,7 +39,7 @@ export async function getUserById(user_id: number) {
         if (domainUser instanceof Error) {
             return { status: 500, message: "Internal Server Error"}
         }
-        const dtoUser = new UserDTO(domainUser.id, domainUser.username);
+        const dtoUser = new UserDTO(domainUser.id, domainUser.username, domainUser.password);
         return { status: 200, data: dtoUser };
     } catch (err: any) {
         console.error(err);
