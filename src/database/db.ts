@@ -21,6 +21,7 @@ const addUserQuery: string = 'INSERT INTO users(username, password) VALUES($1, $
 const getUserByIdQuery: string = 'SELECT * FROM users WHERE id = $1';
 const updateUserByIdQuery: string = 'UPDATE users SET username = $2 WHERE id = $1';
 const deleteUserByIdQuery: string = 'DELETE FROM users WHERE id = $1';
+const getUserByUsernameQuery: string = "SELECT * FROM users WHERE username = $1";
 
 //pet querys
 const getAllPetsQuery: string = 'SELECT * FROM pets';
@@ -81,6 +82,7 @@ interface Database {
     getAllUsers: () => Promise<UserDomain[] | Error>;
     addUser: (username: string, password: string) => Promise<string | Error>;
     getUserById: (user_id: number) => Promise<UserDomain | Error>;
+    getUserByUsername: (username: string) => Promise<UserDomain | Error>;
     updateUserById: (user_id: number, username: string) => Promise<string | Error>;
     deleteUserById: (user_id: number) => Promise<string | Error>;
     
@@ -121,7 +123,6 @@ const database: Database = {
     },
     addUser: async function (username: string, password: string) {
         try {
-            console.log("Here in db layer! The password is: " + password)
             pool.query(addUserQuery, [username, password]);
             return "ok"
         } catch (error: any) {
@@ -131,6 +132,15 @@ const database: Database = {
     getUserById: async function (user_id: number) {
         try {
             const dbResult = await pool.query(getUserByIdQuery, [user_id]);
+            const dbModelUser = dbResult.rows.map((row: UserRow) => new UserDB(row.id, row.username, row.password, row.created_at));
+            return dbModelUser.map((dbUser: UserDB) => new UserDomain(dbUser.id, dbUser.username, dbUser.password))[0]
+        } catch (error: any) {
+            return error
+        }
+    },
+    getUserByUsername: async function (username: string) {
+        try {
+            const dbResult = await pool.query(getUserByUsernameQuery, [username]);
             const dbModelUser = dbResult.rows.map((row: UserRow) => new UserDB(row.id, row.username, row.password, row.created_at));
             return dbModelUser.map((dbUser: UserDB) => new UserDomain(dbUser.id, dbUser.username, dbUser.password))[0]
         } catch (error: any) {

@@ -30,6 +30,15 @@ export async function addUser (username: string, password: string) {
     }
 }
 
+export async function registerNewUser (username: string, petname: string, password: string) {
+    try {
+        await domain.registerNewUser(username, petname, password);
+        return { status: 201, message: `Added user with name ${username} and pet with name ${petname}` }
+    } catch (err: any) {
+        return { status: 500, message: 'Internal Server Error' }
+    }
+}
+
 export async function getUserById(user_id: number) {
     try {
         const domainUser = await domain.getUserById(user_id);

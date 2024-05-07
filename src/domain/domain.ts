@@ -9,8 +9,10 @@ interface domain {
     getAllUsers: () => Promise<UserDomain[] | Error>,
     addUser: (username: string, password: string) => Promise<string | Error>,
     getUserById: (user_id: number) => Promise<UserDomain | Error>,
+    getUserByUsername: (username: string) => Promise<UserDomain | Error>,
     updateUserById: (user_id: number, username: string) => Promise<string | Error>,
     deleteUserById: (user_id: number) => Promise<string | Error>,
+    registerNewUser: (username: string, petname: string, password: string) => Promise<string | Error>
     
     //to-do
     getAllTodos: () => Promise<TodoDomain[] | Error>;
@@ -97,12 +99,16 @@ const domain: domain = {
     addUser: async function (username: string, password: string) {
         const passwordHash = await this.encryptPassword(password);
         const addUserResult = await db.addUser(username, passwordHash);
-        console.log("Here in domain layer! The password is: " + passwordHash)
         return addUserResult;
     },
 
     getUserById: async function (user_id: number) {
         const user = await db.getUserById(user_id);
+        return user;
+    },
+
+    getUserByUsername: async function (username: string) {
+        const user = await db.getUserByUsername(username);
         return user;
     },
 
@@ -114,6 +120,22 @@ const domain: domain = {
     deleteUserById: async function (user_id: number) {
         const deleteUserResult = await db.deleteUserById(user_id);
         return deleteUserResult;
+    },
+
+    registerNewUser: async function (username: string, petname: string, password: string) {
+        try {
+            const addUserResult = await this.addUser(username, password);
+            if (typeof(addUserResult) === "string") {
+                const newUser = await this.getUserByUsername(username);
+                if (newUser instanceof UserDomain) {
+                    const user_id = newUser.id;
+                    const addPetResult = await this.addPet(user_id, petname);
+                    return addPetResult;
+                }
+            }
+        } catch (err: any) {
+            return err.message;
+        }
     },
 
     getAllPets: async function () {

@@ -20,6 +20,12 @@ module.exports = function(app: any) {
         const result = await users.addUser(username, password);
         res.status(result.status).send(result.message);
     }),
+
+    app.post('/register', async (req: Request, res: Response) => {
+        const { username, password, petname } = req.body;
+        const result = await users.registerNewUser(username, petname, password);
+        res.status(result.status).send(result.message);
+    })
     
     app.get('/users/:id', async (req: Request, res: Response) => {
         const user_id = parseInt(req.params.id as string)
