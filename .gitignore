@@ -3,3 +3,4 @@ node_modules
 api-spec/bundle.yml
 dist
 .DS_Store
+.env
