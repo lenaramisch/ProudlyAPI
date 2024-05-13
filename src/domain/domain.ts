@@ -97,7 +97,7 @@ const domain: domain = {
             console.log("Got a login request! The token is: " + token);
             return token;
         } catch (err: any) {
-            return err.message;
+            return err;
         }
     },
 
@@ -165,9 +165,12 @@ const domain: domain = {
     },
 
     registerNewUser: async function (username: string, petname: string, password: string) {
+        //TODO IF USERNAME ALREADY EXISTS IN DB APP CRASHES -> FIX!
         try {
             const addUserResult = await this.addUser(username, password);
-            if (typeof(addUserResult) === "string") {
+            if (addUserResult instanceof Error) {
+                return addUserResult.message;
+            } else {
                 const newUser = await this.getUserByUsername(username);
                 if (newUser instanceof UserDomain) {
                     const user_id = newUser.id;
@@ -176,8 +179,8 @@ const domain: domain = {
                 }
             }
         } catch (err: any) {
-            return err.message;
-        }
+                return err;
+            }
     },
 
     getAllPets: async function () {
