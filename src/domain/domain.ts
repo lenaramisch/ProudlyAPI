@@ -1,8 +1,9 @@
-import { parseArgs } from 'util';
 import db from '../database/db';
 import { TodoSize } from '../database/db';
 import bcrypt from 'bcrypt'
 import { PetDomain, TodoDomain, UserDomain } from './models';
+import { signJwt, verifyJwt } from "../utils/token";
+import { getEnvVariable } from "../utils/helpers";
 
 interface domain {
     //users
@@ -12,8 +13,9 @@ interface domain {
     getUserByUsername: (username: string) => Promise<UserDomain | Error>,
     updateUserById: (user_id: number, username: string) => Promise<string | Error>,
     deleteUserById: (user_id: number) => Promise<string | Error>,
-    registerNewUser: (username: string, petname: string, password: string) => Promise<string | Error>
-    
+    registerNewUser: (username: string, petname: string, password: string) => Promise<string | Error>,
+    loginUser: (username: string, password: string) => Promise<string | Error>
+
     //to-do
     getAllTodos: () => Promise<TodoDomain[] | Error>;
     addTodo: (user_id: number, title: string, size: TodoSize) => Promise<string | Error>;
@@ -49,14 +51,50 @@ const domain: domain = {
             return err.message;
         }
     },
-    
+    //TODO make validatePassword function work!
     validatePassword: async function (userhash: string, password: string) {
         try {
-            return bcrypt.compare(password, userhash)
+            return bcrypt.compare(userhash, password)
         }
         catch (err: any) {
             return err.message;
         }    
+    },
+
+    loginUser: async function (username: string, password: string) {
+        try {
+            //IS USER KNOWN IN DB?
+            const knownUser = await this.getUserByUsername(username);
+            if (Object.keys(knownUser).length === 0) {
+                return { status: 404, message: 'User not registered'};
+            }
+            if (knownUser instanceof Error) {
+                return { status: 500, message: "Internal Server Error"}
+            }
+            //VALIDATE PASSWORD
+            const validatePasswordResult = await this.validatePassword(userhash /* ? */, password);
+            if (validatePasswordResult === false) {
+                return { status: 409, message: 'Password incorrect'}
+            }
+            //CREATE AND SAVE JWT TOKEN
+            const pet = await this.getPetByUserId(knownUser.id);
+            if (Object.keys(pet).length === 0) {
+                return { status: 404, message: 'No pet found'};
+            }
+            if (pet instanceof Error) {
+                return { status: 500, message: "Internal Server Error"}
+            }
+            const token = signJwt(
+                { userid: knownUser.id, 
+                    petid: pet.id},
+                {
+                    expiresIn: `${getEnvVariable("JWT_EXPIRES_IN")}m`,
+                }
+            );
+            return token;
+        } catch (err: any) {
+            return err.message;
+        }
     },
 
     calculateCurrentHappiness: async function (pet_id: number) {

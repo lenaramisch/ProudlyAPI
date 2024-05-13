@@ -17,15 +17,16 @@ export const verifyJwt = <T>(token: string): T | null => {
     }
 };
 
+//Sample Data
 const user = {
-    id: "3894stve8376gdhdj663h",
-    name: "Admin",
-    email: "admin@admin.com",
+    id: 2,
+    petid: 1
   };
   
   // Sign the JWT
   const token = signJwt(
-    { sub: user.id },
+    { userid: user.id, 
+      petid: user.petid},
     {
       expiresIn: `${getEnvVariable("JWT_EXPIRES_IN")}m`,
     }
@@ -34,7 +35,7 @@ const user = {
   console.log({ token });
   
   // Verify the JWT
-  const payload = verifyJwt<{ sub: string }>(token);
+  const payload = verifyJwt<{ userid: number, petid: number }>(token);
   if (payload) {
     console.log("✅Token is valid");
   } else {
