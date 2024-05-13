@@ -21,6 +21,12 @@ module.exports = function(app: any) {
         res.status(result.status).send(result.message);
     }),
 
+    app.post('/login', async (req: Request, res: Response) => {
+        const { username, password } = req.body;
+        const result = await users.loginUser(username, password);
+        res.status(result.status).send(result.data);
+    })
+
     app.post('/register', async (req: Request, res: Response) => {
         const { username, password, petname } = req.body;
         const result = await users.registerNewUser(username, petname, password);

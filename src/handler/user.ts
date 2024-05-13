@@ -20,6 +20,16 @@ export async function getAllUsers() {
     }
 }
 
+export async function loginUser (username: string, password: string) {
+    try {
+        const token = await domain.loginUser(username, password)
+        return { status: 200, data: token}
+    } catch (err: any) {
+        console.error(err);
+        return { status: 500, message: 'Internal Server Error' };
+    }
+}
+
 export async function addUser (username: string, password: string) {
     try {
         await domain.addUser(username, password);

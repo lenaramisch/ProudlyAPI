@@ -51,14 +51,15 @@ const domain: domain = {
             return err.message;
         }
     },
-    //TODO make validatePassword function work!
-    validatePassword: async function (userhash: string, password: string) {
+
+    validatePassword: async function (hashedPassword: string, inputPassword: string) {
         try {
-            return bcrypt.compare(userhash, password)
-        }
-        catch (err: any) {
-            return err.message;
-        }    
+            const match = await bcrypt.compare(inputPassword, hashedPassword);
+            return match;
+        } catch (error) {
+            console.error("Error comparing passwords:", error);
+            return false;
+        }   
     },
 
     loginUser: async function (username: string, password: string) {
@@ -72,7 +73,8 @@ const domain: domain = {
                 return { status: 500, message: "Internal Server Error"}
             }
             //VALIDATE PASSWORD
-            const validatePasswordResult = await this.validatePassword(userhash /* ? */, password);
+            const dbPassword = knownUser.password;
+            const validatePasswordResult = await this.validatePassword(dbPassword, password);
             if (validatePasswordResult === false) {
                 return { status: 409, message: 'Password incorrect'}
             }
@@ -84,6 +86,7 @@ const domain: domain = {
             if (pet instanceof Error) {
                 return { status: 500, message: "Internal Server Error"}
             }
+            console.log("Correct password! Creating token now...");
             const token = signJwt(
                 { userid: knownUser.id, 
                     petid: pet.id},
@@ -91,6 +94,7 @@ const domain: domain = {
                     expiresIn: `${getEnvVariable("JWT_EXPIRES_IN")}m`,
                 }
             );
+            console.log("Got a login request! The token is: " + token);
             return token;
         } catch (err: any) {
             return err.message;
