@@ -67,26 +67,25 @@ const domain: domain = {
             //IS USER KNOWN IN DB?
             const knownUser = await this.getUserByUsername(username);
             if (Object.keys(knownUser).length === 0) {
-                return { status: 404, message: 'User not registered'};
+                return { status: 404, data: {message: 'User not registered'}};
             }
             if (knownUser instanceof Error) {
-                return { status: 500, message: "Internal Server Error"}
+                return { status: 500, data: {message: "Internal Server Error"}}
             }
             //VALIDATE PASSWORD
             const dbPassword = knownUser.password;
             const validatePasswordResult = await this.validatePassword(dbPassword, password);
             if (validatePasswordResult === false) {
-                return { status: 409, message: 'Password incorrect'}
+                return { status: 409, data: {message: 'Password incorrect'}}
             }
             //CREATE AND SAVE JWT TOKEN
             const pet = await this.getPetByUserId(knownUser.id);
-            if (Object.keys(pet).length === 0) {
-                return { status: 404, message: 'No pet found'};
-            }
             if (pet instanceof Error) {
-                return { status: 500, message: "Internal Server Error"}
+                return { status: 500, data: {message: "Internal Server Error"}}
             }
-            console.log("Correct password! Creating token now...");
+            if (Object.keys(pet).length === 0) {
+                return { status: 404, data: {message: 'No pet found'}};
+            }
             const token = signJwt(
                 { userid: knownUser.id, 
                     petid: pet.id},
@@ -94,8 +93,7 @@ const domain: domain = {
                     expiresIn: `${getEnvVariable("JWT_EXPIRES_IN")}m`,
                 }
             );
-            console.log("Got a login request! The token is: " + token);
-            return token;
+            return { status: 200, data: { token } };
         } catch (err: any) {
             return err;
         }

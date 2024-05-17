@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3030;
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));

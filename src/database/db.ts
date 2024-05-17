@@ -174,7 +174,6 @@ const database: Database = {
 
             for (let index = 0; index < dbModelPet.length; index++) {
                 const pet = dbModelPet[index];
-                console.log("DBPet is: " + JSON.stringify(pet))
             }
             return dbModelPet.map((dbPet: PetDB) => new PetDomain(
                 dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
@@ -199,7 +198,6 @@ const database: Database = {
                 row.id, row.user_id, row.name, row.xp, row.happiness, 
                 row.happiness_reduction_rate, row.happiness_last_updated, 
                 row.created_at));
-            
             return dbModelPet.map((dbPet: PetDB) => new PetDomain(
                 dbPet.id, dbPet.user_id, dbPet.name, dbPet.xp, 
                 dbPet.happiness, dbPet.happiness_reduction_rate, 

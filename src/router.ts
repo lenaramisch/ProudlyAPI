@@ -1,9 +1,17 @@
 import express, {Request, Response} from 'express';
+import cors from 'cors';
 import * as users from './handler/user';
 import * as todos from './handler/todo';
 import * as pets from './handler/pet';
 
 module.exports = function(app: any) {
+    const allowedOrigins = ['http://localhost:3000'];
+
+    const options: cors.CorsOptions = {
+    origin: allowedOrigins
+    };
+    app.use(cors(options));
+
     //Home route:
         app.get('/', async (req: Request, res: Response) => {
             res.status(200).send("This is working!");
@@ -24,7 +32,7 @@ module.exports = function(app: any) {
     app.post('/login', async (req: Request, res: Response) => {
         const { username, password } = req.body;
         const result = await users.loginUser(username, password);
-        res.status(result.status).send(result.data);
+        res.status(result.status).json(result.data);
     })
 
     app.post('/register', async (req: Request, res: Response) => {
