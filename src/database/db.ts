@@ -249,7 +249,6 @@ const database: Database = {
     increasePetsHappiness: async function (user_id: number, increaseRate: number) {
         try {
             const pet = await this.getPetByUserId(user_id);
-            console.log("In db... pet is: " + JSON.stringify(pet))
             if (pet instanceof PetDomain) {
                 const oldHappiness = pet.happiness;
                 let newHappiness = oldHappiness + increaseRate;

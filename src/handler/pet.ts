@@ -14,19 +14,16 @@ export async function getAllPets() {
         }
         for (let index = 0; index < domainPets.length; index++) {
             const pet = domainPets[index];
-            console.log("DomainPet is: " + JSON.stringify(pet))
         }
         let dtoPets = [];
         for (let index = 0; index < domainPets.length; index++) {
             let pet = domainPets[index];
-            console.log("Currently handling pet ID:" + pet.id)
             const current_happiness = await domain.calculateCurrentHappiness(pet.id);
             if (typeof(current_happiness) === 'number') {
                 let dtoPet = new PetDTO(
                     pet.id, pet.user_id, pet.name, pet.xp, current_happiness
                 );
                 dtoPets.push(dtoPet);
-                console.log("Pushed pet: " + JSON.stringify(dtoPet))
             }
             else {
                 console.log(`Failed to calculate happiness for pet with ID ${pet.id}`);

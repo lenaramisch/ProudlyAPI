@@ -115,7 +115,6 @@ const domain: domain = {
                         date.getUTCDate(), date.getUTCHours(),
                         date.getUTCMinutes(), date.getUTCSeconds());
 
-        console.log("Current time in UTC: " + new Date(now_utc))
 
         //ms -> h
         const elapsed_time_ms = now_utc - happiness_last_updated.valueOf();

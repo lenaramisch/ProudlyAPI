@@ -111,7 +111,6 @@ module.exports = function(app: any) {
     }),
 
     app.put('/todos/complete/:id', async (req: Request, res: Response) => {
-        console.log("Put request to complete todo arrived!")
         const todo_id = parseInt(req.params.id as string);
         const result = await todos.completeTodoById(todo_id);
         res.status(result.status).send(result.message);
