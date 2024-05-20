@@ -30,6 +30,16 @@ export async function loginUser (username: string, password: string) {
     }
 }
 
+export async function verifyToken (token: string) {
+    try {
+        const encoded = await domain.verifyToken(token)
+        return { status: 200, data: encoded}
+    } catch (err: any) {
+        console.error(err);
+        return { status: 500, message: 'Internal Server Error' };
+    }
+}
+
 export async function addUser (username: string, password: string) {
     try {
         await domain.addUser(username, password);

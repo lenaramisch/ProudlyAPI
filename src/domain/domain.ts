@@ -39,7 +39,7 @@ interface domain {
     calculateCurrentHappiness: (pet_id: number) => Promise<number | { status: number, message: string}>;
     encryptPassword: (password: string) => Promise<string>;
     validatePassword: (userhash: string, password: string) => Promise<boolean>;
-
+    verifyToken: (token: string) => Promise<string | Error>;
 }
 
 const domain: domain = {
@@ -48,6 +48,15 @@ const domain: domain = {
             return bcrypt.hash(password, /*salt rounds: */10)
         }
         catch (err: any) {
+            return err.message;
+        }
+    },
+
+    verifyToken: async function (token: string) {
+        try {
+            const encoded = verifyJwt(token);
+            return encoded;
+        } catch (err: any) {
             return err.message;
         }
     },

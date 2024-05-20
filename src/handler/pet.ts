@@ -1,4 +1,3 @@
-import { PetDomain } from "../domain/models";
 import { PetDTO } from "./models";
 import domain from "../domain/domain";
 

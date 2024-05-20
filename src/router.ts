@@ -35,6 +35,12 @@ module.exports = function(app: any) {
         res.status(result.status).json(result.data);
     })
 
+    app.post('/verify', async (req: Request, res: Response) => {
+        const { token } = req.body;
+        const encodedResult = await users.verifyToken(token);
+        res.status(encodedResult.status).json(encodedResult.data);
+    })
+
     app.post('/register', async (req: Request, res: Response) => {
         const { username, password, petname } = req.body;
         const result = await users.registerNewUser(username, petname, password);
