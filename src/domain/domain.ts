@@ -231,7 +231,7 @@ const domain: domain = {
 
     addTodo: async function (user_id: number, title: string, size: TodoSize) {
         const addTodoResult = await db.addTodo(user_id, title, size)
-        return addTodoResult;
+        return addTodoResult; 
     },
 
     getTodoById: async function (todo_id: number) {
@@ -267,7 +267,6 @@ const domain: domain = {
     completeTodoById: async function (todo_id: number) {
         try {
             const todo = await db.getTodoById(todo_id);
-            console.log("In domain! todo is: " + JSON.stringify(todo))
             if (todo instanceof TodoDomain) {
                 const user_id = todo.user_id;
                 const todo_size = todo.size;

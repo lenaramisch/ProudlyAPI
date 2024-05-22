@@ -123,7 +123,7 @@ const database: Database = {
     },
     addUser: async function (username: string, password: string) {
         try {
-            pool.query(addUserQuery, [username, password]);
+            await pool.query(addUserQuery, [username, password]);
             return "ok"
         } catch (error: any) {
             return error
@@ -149,7 +149,7 @@ const database: Database = {
     },
     updateUserById: async function (user_id: number, username: string) {
         try {
-            pool.query(updateUserByIdQuery, [user_id, username])
+            await pool.query(updateUserByIdQuery, [user_id, username])
             return "ok"
         } catch (error: any) {
             return error
@@ -157,7 +157,7 @@ const database: Database = {
     },
     deleteUserById: async function (user_id: number) {
         try {
-            pool.query(deleteUserByIdQuery, [user_id])
+            await pool.query(deleteUserByIdQuery, [user_id])
             return "ok"
         } catch (error: any) {
             return error
@@ -185,7 +185,7 @@ const database: Database = {
     },
     addPet: async function (user_id: number, name: string) {
         try {
-            pool.query(addPetQuery, [user_id, name]);
+            await pool.query(addPetQuery, [user_id, name]);
             return "ok"
         } catch (error: any) {
             return error
@@ -208,7 +208,7 @@ const database: Database = {
     },
     deletePetByUserId: async function (user_id: number) {
         try {
-            pool.query(deletePetByUserIdQuery, [user_id])
+            await pool.query(deletePetByUserIdQuery, [user_id])
             return "ok"
         } catch (error: any) {
             return error
@@ -232,7 +232,7 @@ const database: Database = {
     },
     updatePetById: async function (pet_id: number, name: string) {
         try {
-            pool.query(updatePetByIdQuery, [pet_id, name])
+            await pool.query(updatePetByIdQuery, [pet_id, name])
             return "ok"
         } catch (error: any) {
             return error
@@ -240,7 +240,7 @@ const database: Database = {
     },
     deletePetById: async function (pet_id: number) {
         try {
-            pool.query(deletePetByIdQuery, [pet_id])
+            await pool.query(deletePetByIdQuery, [pet_id])
             return "ok"
         } catch (error: any) {
             return error
@@ -256,7 +256,7 @@ const database: Database = {
                     newHappiness = 100
                 } 
                 // current time to database timestamp tz
-                pool.query(increasePetsHappinessQuery, [user_id, newHappiness])
+                await pool.query(increasePetsHappinessQuery, [user_id, newHappiness])
                 return "ok"
             }
         } catch (error: any) {
@@ -278,7 +278,7 @@ const database: Database = {
     },
     completeTodoById: async function (todo_id: number) {
         try {
-            pool.query(completeTodoByIdQuery, [todo_id])
+            await pool.query(completeTodoByIdQuery, [todo_id])
             return "ok"
         } catch (error: any) {
             return error
@@ -301,7 +301,7 @@ const database: Database = {
     },
     addTodo: async function (user_id: number, title: string, size: TodoSize) {
         try {
-            pool.query(addTodoQuery, [user_id, title, size]);
+            await pool.query(addTodoQuery, [user_id, title, size]);
             return "ok"
         } catch (error: any) {
             return error
@@ -322,7 +322,7 @@ const database: Database = {
     },
     updateTodoById: async function (todo_id: number, title: string, size: TodoSize) {
         try {
-            pool.query(updateTodoByIdQuery, [todo_id, title, size])
+            await pool.query(updateTodoByIdQuery, [todo_id, title, size])
             return "ok"
         } catch (error: any) {
             return error
@@ -330,7 +330,7 @@ const database: Database = {
     },
     deleteTodoById: async function (todo_id: number) {
         try {
-            pool.query(deleteTodoByIdQuery, [todo_id])
+            await pool.query(deleteTodoByIdQuery, [todo_id])
             return "ok"
         } catch (error: any) {
             return error
@@ -351,7 +351,7 @@ const database: Database = {
     },
     deleteTodosByUserId: async function (user_id: number) {
         try {
-            pool.query(deleteTodosByUserIdQuery, [user_id])
+            await pool.query(deleteTodosByUserIdQuery, [user_id])
             return "ok"
         } catch (error: any) {
             return error
