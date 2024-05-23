@@ -7,7 +7,7 @@ export async function getAllUsers() {
     try {
         const domainUsers = await domain.getAllUsers();
         if (Object.keys(domainUsers).length === 0) {
-            return { status: 404, message: 'No users found'};
+            return { status: 200, data: []};
         }
         if (domainUsers instanceof Error) {
             return { status: 500, message: "Internal Server Error"}

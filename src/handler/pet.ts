@@ -6,7 +6,7 @@ export async function getAllPets() {
         const domainPets = await domain.getAllPets();
         
         if (Object.keys(domainPets).length === 0) {
-            return { status: 404, message: 'No pets found'};
+            return { status: 200, data: []};
         }
         if (domainPets instanceof Error) {
             return { status: 500, message: "Internal Server Error"}

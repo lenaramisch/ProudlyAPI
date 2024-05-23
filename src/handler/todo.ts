@@ -24,7 +24,7 @@ export async function getActiveTodosByUserId(user_id: number) {
     try {
         const activeDomainTodos = await domain.getActiveTodosByUserId(user_id);
         if (Object.keys(activeDomainTodos).length === 0) {
-            return { status: 404, message: 'No active todos for user with id '+ user_id +' found'};
+            return { status: 200, data: []};
         }
         if (activeDomainTodos instanceof Error) {
             return { status: 500, message: "Internal Server Error"}
@@ -43,7 +43,7 @@ export async function getAllTodos() {
     try {
         const domainTodos = await domain.getAllTodos();
         if (Object.keys(domainTodos).length === 0) {
-            return { status: 404, message: 'No todos found'};
+            return { status: 200, message: []};
         }
         if (domainTodos instanceof Error) {
             return { status: 500, message: "Internal Server Error"}
@@ -124,7 +124,7 @@ export async function getTodosByUserId(user_id: number) {
     try {
         const domainTodos = await domain.getTodosByUserId(user_id);
         if (Object.keys(domainTodos).length === 0) {
-            return { status: 404, message: 'No todos found'};
+            return { status: 200, data: []};
         }
         if (domainTodos instanceof Error) {
             return { status: 500, message: "Internal Server Error"}
@@ -143,7 +143,7 @@ export async function deleteTodosByUserId(user_id: number) {
     try {
         const domainTodos = await domain.getTodosByUserId(user_id);
         if (Object.keys(domainTodos).length === 0) {
-            return { status: 404, message: 'No todos found for user with id ' + user_id};
+            return { status: 200, data: []};
         }
         if (domainTodos instanceof Error) {
             return { status: 500, message: "Internal Server Error"}
