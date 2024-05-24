@@ -39,6 +39,12 @@ put:
       schema:
         type: integer
         format: int64
+    - name: JWT
+      in: header
+      description: Token for authentication
+      required: true
+      schema:
+        type: string
   requestBody:
     required: true
     content:
@@ -50,6 +56,8 @@ put:
       description: Update done
     '400':
       description: Invalid ID supplied
+    '403':
+      description: Invalid JWT for that request (forbidden)
     '404':
       description: Can not find todo (todo ID)
 
@@ -69,11 +77,19 @@ delete:
       schema:
         type: integer
         format: int64
+    - name: JWT
+      in: header
+      description: Token for authentication
+      required: true
+      schema:
+        type: string
   responses:
     '200':
       description: Deleted todo (todo ID)
     '400':
       description: Invalid ID supplied
+    '403':
+      description: Invalid JWT for that request (forbidden)
     '404':
       description: Todo not found
 

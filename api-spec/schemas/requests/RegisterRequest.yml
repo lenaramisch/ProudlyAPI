@@ -1,0 +1,15 @@
+type: object
+properties:
+  username:
+    type: string
+    example: BestName123
+  password:
+    type: string
+    example: supersafe123
+  petname:
+    type: string
+    example: Tabby
+required:
+  - username
+  - password
+  - petname

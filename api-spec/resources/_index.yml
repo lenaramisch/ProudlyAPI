@@ -7,11 +7,26 @@
 /todos/user/{userId}:
   $ref: './todo/TodosByUserId.yml'
 
+/todos/user/active/{userId}:
+  $ref: './todo/ActiveTodosByUserId.yml'
+
+/todos/complete/{Id}:
+  $ref: './todo/CompleteTodoById.yml'
+
 /users:
   $ref: './user/Users.yml'
 
 /users/{userId}:
   $ref: './user/UserById.yml'
+
+/login:
+  $ref: './user/Login.yml'
+
+/register:
+  $ref: './user/Register.yml'
+
+/verify:
+  $ref: './user/Verify.yml'
 
 /pets:
   $ref: './pet/Pets.yml'

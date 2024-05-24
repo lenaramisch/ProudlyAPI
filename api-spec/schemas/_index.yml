@@ -10,6 +10,15 @@ TodoPostUpdateRequest:
 UserPostUpdateRequest:
   $ref: './requests/UserPostUpdateRequest.yml'
 
+TokenRequest:
+  $ref: './requests/Token.yml'
+
+LoginRequest:
+  $ref: './requests/LoginRequest.yml'
+
+RegisterRequest:
+  $ref: './requests/RegisterRequest.yml'
+
 # Types
 Pet:
   $ref: './types/pet.yml'
@@ -19,3 +28,9 @@ Todo:
   
 User:
   $ref: './types/user.yml'
+
+UserData:
+  $ref: './types/userdata.yml'
+
+Token:
+  $ref: './types/token.yml'

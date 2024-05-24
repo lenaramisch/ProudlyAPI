@@ -1,0 +1,25 @@
+type: object
+properties:
+  userid:
+    type: integer
+    format: int64
+    example: 1
+  petid:
+    type: integer
+    format: int64
+    example: 1
+  iat:
+    description: initiated at
+    type: integer
+    format: int64
+    example: 1716548090
+  exp:
+    description: expiring at
+    type: integer
+    format: int64
+    example: 1716634490
+required:
+  - userid
+  - petid
+  - iat
+  - exp

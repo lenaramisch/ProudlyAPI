@@ -1,0 +1,17 @@
+post:
+  summary: Register new user
+  operationId: registerUser
+  tags:
+    - user
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema: 
+          $ref: '../../schemas/_index.yml#/RegisterRequest'
+  responses:
+    '201':
+      description: Added user with username and pet with petname
+
+  # This API has no security
+  security: []
