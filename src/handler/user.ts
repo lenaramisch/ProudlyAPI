@@ -1,72 +1,92 @@
 import { UserDomain } from "../domain/models";
 import { UserDTO } from "./models";
 import domain from "../domain/domain";
+import {Request, Response} from 'express';
 
 
-export async function getAllUsers() {
+export async function getAllUsers(req: Request, res: Response) {
     try {
         const domainUsers = await domain.getAllUsers();
         if (Object.keys(domainUsers).length === 0) {
-            return { status: 200, data: []};
+            res.status(200).send(domainUsers)
+            return
         }
         if (domainUsers instanceof Error) {
-            return { status: 500, message: "Internal Server Error"}
+            res.status(500).send("Internal Server Error")
+            return
         }
         const dtoUsers = domainUsers.map((user: UserDomain) => new UserDTO(user.id, user.username, user.password))
-        return { status: 200, data: dtoUsers };
+        res.status(200).send(dtoUsers);
+        return
     } catch (err: any) {
         console.error(err);
-        return { status: 500, message: 'Internal Server Error' };
+        res.status(500).send("Internal Server Error")
+        return
     }
 }
 
-export async function loginUser (username: string, password: string) {
+export async function loginUser (req: Request, res: Response) {
     try {
+        const { username, password } = req.body;
         const token = await domain.loginUser(username, password)
-        return { status: 200, data: token}
+        res.status(200).send(token);
+        return
     } catch (err: any) {
         console.error(err);
-        return { status: 500, message: 'Internal Server Error' };
+        res.status(500).send('Internal Server Error');
+        return
     }
 }
 
-export async function verifyToken (token: string) {
+export async function verifyToken (req: Request, res: Response) {
     try {
+        const { token } = req.body;
         const encoded = await domain.verifyToken(token)
-        return { status: 200, data: encoded}
+        res.status(200).send(encoded);
+        return
     } catch (err: any) {
         console.error(err);
-        return { status: 500, message: 'Internal Server Error' };
+        res.status(500).send('Internal Server Error');
+        return
     }
 }
 
-export async function addUser (username: string, password: string) {
+export async function addUser (req: Request, res: Response) {
     try {
+        const { username, password } = req.body;
         await domain.addUser(username, password);
-        return { status: 201, message: `Added user with name ${username}` };
+        res.status(201).send(`Added user with name ${username}`);
+        return
     } catch (err: any) {
         console.error(err);
-        return { status: 500, message: 'Internal Server Error' };
+        res.status(500).send('Internal Server Error');
+        return
     }
 }
 
-export async function registerNewUser (username: string, petname: string, password: string) {
+export async function registerNewUser (req: Request, res: Response) {
     try {
+        const { username, password, petname } = req.body;
         await domain.registerNewUser(username, petname, password);
-        return { status: 201, message: `Added user with name ${username} and pet with name ${petname}` }
+        res.status(201).send(`Added user with name ${username} and pet with name ${petname}`);
+        return
     } catch (err: any) {
-        return { status: 500, message: 'Internal Server Error' }
+        res.status(500).send('Internal Server Error');
+        return
     }
 }
 
-export async function getUserById(user_id: number) {
+export async function getUserById(req: Request, res: Response) {
     try {
+        const user_id = parseInt(req.params.id as string)
         const domainUser = await domain.getUserById(user_id);
         if (Object.keys(domainUser).length === 0) {
-            return { status: 404, message: 'No user found for user_id ' + user_id};
+            res.status(404).send('No user found for user_id ' + user_id);
+            return
         }
         if (domainUser instanceof Error) {
-            return { status: 500, message: "Internal Server Error"}
+            res.status(500).send('Internal Server Error');
+            return
         }
         const dtoUser = new UserDTO(domainUser.id, domainUser.username, domainUser.password);
         return { status: 200, data: dtoUser };
@@ -76,36 +96,47 @@ export async function getUserById(user_id: number) {
     }
 }
 
-export async function updateUserById(user_id: number, username: string) {
+export async function updateUserById(req: Request, res: Response) {
     try {
+        const user_id = parseInt(req.params.id as string)
+        const { username } = req.body;
         const domainUser = await domain.getUserById(user_id);
         if (Object.keys(domainUser).length === 0) {
-            return { status: 404, message: 'No user found for user_id ' + user_id};
+            res.status(404).send('No user found for user_id ' + user_id);
+            return
         }
         if (domainUser instanceof Error) {
-            return { status: 500, message: "Internal Server Error"}
+            res.status(500).send('Internal Server Error');
+            return
         }
         await domain.updateUserById(user_id, username);
-        return { status: 200, message: 'Updated user' }
+        res.status(200).send('Updated user')
+        return
     } catch (err: any) {
         console.error(err);
-        return { status: 500, message: 'Internal Server Error' };
+        res.status(500).send('Internal Server Error');
+        return
     }
 }
 
-export async function deleteUserById(user_id: number) {
+export async function deleteUserById(req: Request, res: Response) {
     try {
+        const user_id = parseInt(req.params.id as string)
         const domainUser = await domain.getUserById(user_id);
         if (Object.keys(domainUser).length === 0) {
-            return { status: 404, message: 'No user found for user_id ' + user_id};
+            res.status(404).send('No user found for user_id ' + user_id);
+            return
         }
         if (domainUser instanceof Error) {
-            return { status: 500, message: "Internal Server Error"}
+            res.status(500).send('Internal Server Error')
+            return
         }
         await domain.deleteUserById(user_id)
-        return { status: 200, message: 'Deleted user with user_id ' + user_id}
+        res.status(200).send('Deleted user with user_id ' + user_id)
+        return
     } catch (err: any) {
         console.error(err);
-        return { status: 500, message: 'Internal Server Error' };
+        res.status(500).send('Internal Server Error')
+        return
     }
 }
