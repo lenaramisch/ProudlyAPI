@@ -78,6 +78,44 @@ export async function getActiveTodosByUserId(req: Request, res: Response) {
     }
 }
 
+export async function getCompletedTodosByUserId(req: Request, res: Response) {
+    try {
+        const token = req.headers.authorization
+        const user_id = parseInt(req.params.userid as string);
+        if (!token) {
+            console.log("No token provided")
+            res.status(401).send("No token provided");
+            return
+        }
+        const decoded = await domain.verifyToken(token) as string;
+
+        const data = JSON.parse(JSON.stringify(decoded))
+
+        if (data.userid !== user_id){
+            res.status(403).send("Forbidden")
+            return
+        }
+        const completedDomainTodos = await domain.getCompletedTodosByUserId(user_id);
+        if (Object.keys(completedDomainTodos).length === 0) {
+            res.status(200).send([])
+            return
+        }
+        if (completedDomainTodos instanceof Error) {
+            res.status(500).send("Internal Server Error")
+            return
+        }
+        const completedDtoTodos = completedDomainTodos.map((todo: TodoDomain) => new TodoDTO(
+            todo.id, todo.user_id, todo.title, todo.size
+        ));
+        res.status(200).send(completedDtoTodos)
+        return
+    } catch (err: any) {
+        console.error(err);
+        res.status(500).send("Internal Server Error")
+        return
+    }
+}
+
 export async function getAllTodos(req: Request, res: Response) {
     try {
         const domainTodos = await domain.getAllTodos();

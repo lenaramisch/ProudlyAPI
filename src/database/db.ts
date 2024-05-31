@@ -14,6 +14,7 @@ const getTodosByUserIdQuery: string = 'SELECT * FROM todos WHERE user_id = $1';
 const deleteTodosByUserIdQuery: string = 'DELETE FROM todos WHERE user_id = $1';
 const completeTodoByIdQuery: string = "UPDATE todos SET completed = true WHERE id = $1";
 const getActiveTodosByUserIdQuery: string = 'SELECT * from todos WHERE user_id = $1 AND completed = false';
+const getCompletedTodosByUserIdQuery: string = 'SELECT * from todos WHERE user_id = $1 AND completed = true';
 
 //user querys
 const getAllUsersQuery: string = 'SELECT * FROM users';
@@ -96,6 +97,7 @@ interface Database {
     deleteTodosByUserId: (user_id: number) => Promise<string | Error>;
     completeTodoById: (todo_id: number) => Promise<string | Error>;
     getActiveTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>;
+    getCompletedTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>;
 
     //pet
     getAllPets: () => Promise<PetDomain[] | Error >;
@@ -266,6 +268,19 @@ const database: Database = {
     getActiveTodosByUserId: async function(user_id: number) {
         try {
             const dbResult = await pool.query(getActiveTodosByUserIdQuery, [user_id]);
+            const dbModelTodo = dbResult.rows.map((row: TodoRow) => new TodoDB(
+                row.id, row.user_id, row.title, row.size, row.completed, row.created_at
+            ));
+            return dbModelTodo.map((dbTodo: TodoDB) => new TodoDomain(
+                dbTodo.id, dbTodo.user_id, dbTodo.title, dbTodo.size, dbTodo.completed
+            ));
+        } catch (error: any) {
+            return error
+        }
+    },
+    getCompletedTodosByUserId: async function(user_id: number) {
+        try {
+            const dbResult = await pool.query(getCompletedTodosByUserIdQuery, [user_id]);
             const dbModelTodo = dbResult.rows.map((row: TodoRow) => new TodoDB(
                 row.id, row.user_id, row.title, row.size, row.completed, row.created_at
             ));

@@ -10,6 +10,9 @@
 /todos/user/active/{userId}:
   $ref: './todo/ActiveTodosByUserId.yml'
 
+/todos/user/archive/{userId}:
+  $ref: './todo/CompletedTodosByUserId.yml'
+
 /todos/complete/{Id}:
   $ref: './todo/CompleteTodoById.yml'
 

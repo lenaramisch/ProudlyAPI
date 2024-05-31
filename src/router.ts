@@ -1,4 +1,4 @@
-import express, {Request, Response} from 'express';
+import {Request, Response} from 'express';
 import cors from 'cors';
 import * as users from './handler/user';
 import * as todos from './handler/todo';
@@ -81,6 +81,10 @@ module.exports = function(app: any) {
 
     app.get('/todos/user/active/:userid', async (req: Request, res: Response) => {
         await todos.getActiveTodosByUserId(req, res)
+    }),
+
+    app.get('/todos/user/archive/:userid', async (req: Request, res: Response) => {
+        await todos.getCompletedTodosByUserId(req, res)
     }),
 
     app.put('/todos/complete/:id', async (req: Request, res: Response) => {

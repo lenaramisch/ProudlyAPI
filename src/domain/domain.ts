@@ -26,7 +26,7 @@ interface domain {
     deleteTodosByUserId: (user_id: number) => Promise<string | Error>;
     completeTodoById: (todo_id: number) => Promise<string | Error>;
     getActiveTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>;
-
+    getCompletedTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>
     //pets
     getAllPets: () => Promise<PetDomain[] | Error >;
     addPet: (user_id: number, name: string) => Promise<string | Error>;
@@ -262,6 +262,11 @@ const domain: domain = {
     getActiveTodosByUserId: async function (user_id: number) {
         const activeTodos = db.getActiveTodosByUserId(user_id);
         return activeTodos;
+    },
+
+    getCompletedTodosByUserId: async function (user_id: number) {
+        const completedTodos = db.getCompletedTodosByUserId(user_id);
+        return completedTodos;
     },
 
     completeTodoById: async function (todo_id: number) {
