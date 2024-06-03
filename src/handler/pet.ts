@@ -60,7 +60,7 @@ export async function getPetByUserId(req: Request, res: Response) {
         const token = req.headers.authorization
         const user_id = parseInt(req.params.userid as string)
         if (!token) {
-            console.log("No token provided")
+            console.log("No token provided (getPetByUserId)")
             res.status(401).send("No token provided");
             return
         }
@@ -128,7 +128,7 @@ export async function getPetById(req: Request, res: Response) {
         const pet_id = parseInt(req.params.id as string)
         const token = req.headers.authorization
         if (!token) {
-            console.log("No token provided")
+            console.log("No token provided (getPetById)")
             res.status(401).send("No token provided");
             return
         }

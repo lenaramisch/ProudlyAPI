@@ -18,7 +18,7 @@ export async function completeTodoById(req: Request, res: Response) {
         const user_id = domainTodo.user_id;
         const token = req.headers.authorization
         if (!token) {
-            console.log("No token provided")
+            console.log("No token provided (completeTodoById)")
             res.status(401).send("No token provided");
             return
         }
@@ -45,7 +45,7 @@ export async function getActiveTodosByUserId(req: Request, res: Response) {
         const token = req.headers.authorization
         const user_id = parseInt(req.params.userid as string);
         if (!token) {
-            console.log("No token provided")
+            console.log("No token provided (getActiveTodos)")
             res.status(401).send("No token provided");
             return
         }
@@ -83,7 +83,7 @@ export async function getCompletedTodosByUserId(req: Request, res: Response) {
         const token = req.headers.authorization
         const user_id = parseInt(req.params.userid as string);
         if (!token) {
-            console.log("No token provided")
+            console.log("No token provided (getCompletedTodosByUserId)")
             res.status(401).send("No token provided");
             return
         }
@@ -144,7 +144,7 @@ export async function addTodo(req: Request, res: Response) {
         const user_id = parseInt(req.params.userid as string)
         const token = req.headers.authorization
         if (!token) {
-            console.log("No token provided")
+            console.log("No token provided (addTodo)")
             res.status(401).send("No token provided");
             return
         }
@@ -206,7 +206,7 @@ export async function updateTodoById(req: Request, res: Response) {
         const user_id = domainTodo.user_id;
         const token = req.headers.authorization
         if (!token) {
-            console.log("No token provided")
+            console.log("No token provided (updateTodoById)")
             res.status(401).send("No token provided");
             return
         }
@@ -243,7 +243,7 @@ export async function deleteTodoById(req: Request, res: Response) {
         const user_id = domainTodo.user_id;
         const token = req.headers.authorization
         if (!token) {
-            console.log("No token provided")
+            console.log("No token provided (deleteTodoById)")
             res.status(401).send("No token provided");
             return
         }
