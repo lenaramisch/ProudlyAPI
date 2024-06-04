@@ -78,7 +78,6 @@ export async function registerNewUser (req: Request, res: Response) {
 
 export async function getUserById(req: Request, res: Response) {
     try {
-        console.log("Got request for getUserById")
         const user_id = parseInt(req.params.id as string)
         const domainUser = await domain.getUserById(user_id);
         if (Object.keys(domainUser).length === 0) {
@@ -90,7 +89,6 @@ export async function getUserById(req: Request, res: Response) {
             return
         }
         const dtoUser = new UserDTO(domainUser.id, domainUser.username, domainUser.password);
-        console.log("Sending back data: " + JSON.stringify(dtoUser))
         res.status(200).send(dtoUser)
         return
     } catch (err: any) {
