@@ -26,7 +26,7 @@ const getUserByUsernameQuery: string = "SELECT * FROM users WHERE username = $1"
 
 //pet querys
 const getAllPetsQuery: string = 'SELECT * FROM pets';
-const addPetQuery: string = 'INSERT INTO pets(user_id, name, imageKey) VALUES($1, $2, $3)';
+const addPetQuery: string = 'INSERT INTO pets(user_id, name, image_key) VALUES($1, $2, $3)';
 const deletePetByUserIdQuery: string = 'DELETE FROM pets WHERE user_id = $1';
 const getPetByUserIdQuery: string = 'SELECT * FROM pets WHERE user_id = $1';
 const deletePetByIdQuery: string = 'DELETE FROM pets WHERE id = $1';
@@ -34,13 +34,13 @@ const updatePetByIdQuery: string = 'UPDATE pets SET name = $2 WHERE id= $1';
 const getPetByIdQuery: string = 'SELECT * FROM pets WHERE id = $1';
 const increasePetsHappinessAndXPQuery: string = 'UPDATE pets SET happiness = $2, happiness_last_updated = NOW(), xp = $3 WHERE user_id = $1';
 
-export enum TodoSize {
+enum TodoSize {
     Small = "small",
     Medium = "medium",
     Big = "big"
 }
 
-export enum PetImage {
+enum PetImage {
     Cat = "cat",
     Dog = "dog",
     Bird = "bird",
@@ -58,7 +58,7 @@ interface PetRow {
     id: number,
     user_id: number,
     name: string,
-    imageKey: PetImage,
+    image_key: PetImage,
     xp: number,
     happiness: number,
     happiness_reduction_rate: number,
@@ -178,7 +178,7 @@ const database: Database = {
             const dbResult = await pool.query(getAllPetsQuery);
             // map raw QueryResult to db model classes
             const dbModelPet = dbResult.rows.map((row: PetRow) => new PetDB(
-                row.id, row.user_id, row.name, row.imageKey, row.xp, row.happiness, 
+                row.id, row.user_id, row.name, row.image_key, row.xp, row.happiness, 
                 row.happiness_reduction_rate, row.happiness_last_updated, 
                 row.created_at))
 
@@ -205,7 +205,7 @@ const database: Database = {
         try {
             const dbResult = await pool.query(getPetByUserIdQuery, [user_id]);
             const dbModelPet = dbResult.rows.map((row: PetRow) => new PetDB(
-                row.id, row.user_id, row.name, row.imageKey, row.xp, row.happiness, 
+                row.id, row.user_id, row.name, row.image_key, row.xp, row.happiness, 
                 row.happiness_reduction_rate, row.happiness_last_updated, 
                 row.created_at));
             return dbModelPet.map((dbPet: PetDB) => new PetDomain(
@@ -228,7 +228,7 @@ const database: Database = {
         try {
             const dbResult = await pool.query(getPetByIdQuery, [pet_id]);
             const dbModelPet = dbResult.rows.map((row: PetRow) => new PetDB(
-                row.id, row.user_id, row.name, row.imageKey, row.xp, row.happiness, 
+                row.id, row.user_id, row.name, row.image_key, row.xp, row.happiness, 
                 row.happiness_reduction_rate, row.happiness_last_updated, 
                 row.created_at));
 

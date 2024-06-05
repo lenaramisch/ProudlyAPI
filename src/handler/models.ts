@@ -1,4 +1,15 @@
-import { PetImage, TodoSize } from "../database/db";
+enum TodoSize {
+    Small = "small",
+    Medium = "medium",
+    Big = "big"
+}
+
+enum PetImage {
+    Cat = "cat",
+    Dog = "dog",
+    Bird = "bird",
+    Turtle = "turtle"
+}
 
 export class UserDTO {
 constructor(

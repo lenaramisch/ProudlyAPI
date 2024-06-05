@@ -1,9 +1,21 @@
-import db, { PetImage } from '../database/db';
-import { TodoSize } from '../database/db';
+import db from '../database/db';
 import bcrypt from 'bcrypt'
 import { PetDomain, TodoDomain, UserDomain } from './models';
 import { signJwt, verifyJwt } from "../utils/token";
 import { getEnvVariable } from "../utils/helpers";
+
+enum TodoSize {
+    Small = "small",
+    Medium = "medium",
+    Big = "big"
+}
+
+enum PetImage {
+    Cat = "cat",
+    Dog = "dog",
+    Bird = "bird",
+    Turtle = "turtle"
+}
 
 interface domain {
     //users
@@ -275,8 +287,8 @@ const domain: domain = {
             if (todo instanceof TodoDomain) {
                 const user_id = todo.user_id;
                 const todo_size = todo.size;
-                let increaseRateHappiness: number;
-                let increaseXP: number;
+                let increaseRateHappiness: number = 0;
+                let increaseXP: number = 0;
                 switch (todo_size) {
                     case TodoSize.Small:
                         increaseRateHappiness = 15;
@@ -291,7 +303,7 @@ const domain: domain = {
                         increaseXP = 40;
                         break;
                 }
-                db.increasePetsHappinessAndXP(user_id, increaseRateHappiness, increaseXP)
+                await db.increasePetsHappinessAndXP(user_id, increaseRateHappiness, increaseXP)
             } 
             const completeTodoResult = db.completeTodoById(todo_id);
             return completeTodoResult;
