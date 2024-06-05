@@ -1,4 +1,4 @@
-import { TodoSize } from "../database/db";
+import { PetImage, TodoSize } from "../database/db";
 
 export class UserDTO {
 constructor(
@@ -13,6 +13,7 @@ constructor (
     public id: number, 
     public user_id: number, 
     public name: string,
+    public image_key: PetImage,
     public xp: number,
     public current_happiness: number
 ) {}

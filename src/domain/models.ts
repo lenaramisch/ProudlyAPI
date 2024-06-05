@@ -1,4 +1,4 @@
-import {TodoSize} from "../database/db";
+import {PetImage, TodoSize} from "../database/db";
 
 export class TodoDomain {
 constructor(
@@ -23,6 +23,7 @@ constructor(
     public id: number, 
     public user_id: number,
     public name: string,
+    public image_key: PetImage,
     public xp: number,
     public happiness: number,
     public happiness_reduction_rate: number,

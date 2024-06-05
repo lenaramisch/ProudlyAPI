@@ -23,7 +23,7 @@ export async function getAllPets(req: Request, res: Response) {
             const current_happiness = await domain.calculateCurrentHappiness(pet.id);
             if (typeof(current_happiness) === 'number') {
                 let dtoPet = new PetDTO(
-                    pet.id, pet.user_id, pet.name, pet.xp, current_happiness
+                    pet.id, pet.user_id, pet.name, pet.image_key, pet.xp, current_happiness
                 );
                 dtoPets.push(dtoPet);
             }
@@ -44,8 +44,8 @@ export async function getAllPets(req: Request, res: Response) {
 export async function addPet(req: Request, res: Response) {
     try {
         const user_id = parseInt(req.params.userid as string)
-        const { name } = req.body;
-        await domain.addPet(user_id, name);
+        const { name, image_key } = req.body;
+        await domain.addPet(user_id, name, image_key);
         res.status(200).send('Added pet for user with id ' + user_id)
         return
     } catch (err: any) {
@@ -84,7 +84,7 @@ export async function getPetByUserId(req: Request, res: Response) {
         const current_happiness = await domain.calculateCurrentHappiness(domainPet.id);
         if (typeof(current_happiness) === 'number') {
             const dtoPet = new PetDTO(
-                domainPet.id, domainPet.user_id, domainPet.name, 
+                domainPet.id, domainPet.user_id, domainPet.name, domainPet.image_key,
                 domainPet.xp, current_happiness
             );
             res.status(200).send(dtoPet)
@@ -152,7 +152,7 @@ export async function getPetById(req: Request, res: Response) {
         const current_happiness = await domain.calculateCurrentHappiness(domainPet.id);
             if (typeof(current_happiness) === 'number') {
                 const dtoPet = new PetDTO(
-                    domainPet.id, domainPet.user_id, domainPet.name, 
+                    domainPet.id, domainPet.user_id, domainPet.name, domainPet.image_key, 
                     domainPet.xp, current_happiness
                 );
             res.status(200).send(dtoPet)

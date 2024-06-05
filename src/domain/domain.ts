@@ -1,4 +1,4 @@
-import db from '../database/db';
+import db, { PetImage } from '../database/db';
 import { TodoSize } from '../database/db';
 import bcrypt from 'bcrypt'
 import { PetDomain, TodoDomain, UserDomain } from './models';
@@ -13,7 +13,7 @@ interface domain {
     getUserByUsername: (username: string) => Promise<UserDomain | Error>,
     updateUserById: (user_id: number, username: string) => Promise<string | Error>,
     deleteUserById: (user_id: number) => Promise<string | Error>,
-    registerNewUser: (username: string, petname: string, password: string) => Promise<string | Error>,
+    registerNewUser: (username: string, petname: string, password: string, image_key: PetImage) => Promise<string | Error>,
     loginUser: (username: string, password: string) => Promise<string | Error>
 
     //to-do
@@ -29,7 +29,7 @@ interface domain {
     getCompletedTodosByUserId: (user_id: number) => Promise<TodoDomain[] | Error>
     //pets
     getAllPets: () => Promise<PetDomain[] | Error >;
-    addPet: (user_id: number, name: string) => Promise<string | Error>;
+    addPet: (user_id: number, name: string, image_key: PetImage) => Promise<string | Error>;
     getPetByUserId: (user_id: number) => Promise<PetDomain | Error>;
     deletePetByUserId: (user_id: number) => Promise<string | Error>;
     getPetById: (pet_id: number) => Promise<PetDomain | Error>;
@@ -170,7 +170,7 @@ const domain: domain = {
         return deleteUserResult;
     },
 
-    registerNewUser: async function (username: string, petname: string, password: string) {
+    registerNewUser: async function (username: string, petname: string, password: string, image_key: PetImage) {
         //TODO IF USERNAME ALREADY EXISTS IN DB APP CRASHES -> FIX!
         try {
             const addUserResult = await this.addUser(username, password);
@@ -180,7 +180,7 @@ const domain: domain = {
                 const newUser = await this.getUserByUsername(username);
                 if (newUser instanceof UserDomain) {
                     const user_id = newUser.id;
-                    const addPetResult = await this.addPet(user_id, petname);
+                    const addPetResult = await this.addPet(user_id, petname, image_key);
                     return addPetResult;
                 }
             }
@@ -194,8 +194,8 @@ const domain: domain = {
         return allPets;
     },
 
-    addPet: async function (user_id: number, name: string) {
-        const addPetResult = await db.addPet(user_id, name)
+    addPet: async function (user_id: number, name: string, image_key: PetImage) {
+        const addPetResult = await db.addPet(user_id, name, image_key)
         return addPetResult;
     },
 

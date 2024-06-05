@@ -66,8 +66,8 @@ export async function addUser (req: Request, res: Response) {
 
 export async function registerNewUser (req: Request, res: Response) {
     try {
-        const { username, password, petname } = req.body;
-        await domain.registerNewUser(username, petname, password);
+        const { username, password, petname, image_key } = req.body;
+        await domain.registerNewUser(username, petname, password, image_key);
         res.status(201).send(`Added user with name ${username} and pet with name ${petname}`);
         return
     } catch (err: any) {

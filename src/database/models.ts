@@ -1,4 +1,4 @@
-import {TodoSize} from "./db";
+import {TodoSize, PetImage} from "./db";
 
 export class TodoDB {
     constructor(
@@ -25,6 +25,7 @@ export class PetDB {
         public id: number, 
         public user_id: number,
         public name: string,
+        public image_key: PetImage,
         public xp: number,
         public happiness: number,
         public happiness_reduction_rate: number,
