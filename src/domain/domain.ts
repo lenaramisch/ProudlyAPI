@@ -275,19 +275,23 @@ const domain: domain = {
             if (todo instanceof TodoDomain) {
                 const user_id = todo.user_id;
                 const todo_size = todo.size;
-                let increaseRate: number;
+                let increaseRateHappiness: number;
+                let increaseXP: number;
                 switch (todo_size) {
                     case TodoSize.Small:
-                        increaseRate = 15;
+                        increaseRateHappiness = 15;
+                        increaseXP = 10;
                         break;
                     case TodoSize.Medium:
-                        increaseRate = 25;
+                        increaseRateHappiness = 25;
+                        increaseXP = 20;
                         break;
                     case TodoSize.Big:
-                        increaseRate = 50;
+                        increaseRateHappiness = 50;
+                        increaseXP = 40;
                         break;
                 }
-                db.increasePetsHappiness(user_id, increaseRate)
+                db.increasePetsHappinessAndXP(user_id, increaseRateHappiness, increaseXP)
             } 
             const completeTodoResult = db.completeTodoById(todo_id);
             return completeTodoResult;

@@ -32,7 +32,7 @@ const getPetByUserIdQuery: string = 'SELECT * FROM pets WHERE user_id = $1';
 const deletePetByIdQuery: string = 'DELETE FROM pets WHERE id = $1';
 const updatePetByIdQuery: string = 'UPDATE pets SET name = $2 WHERE id= $1';
 const getPetByIdQuery: string = 'SELECT * FROM pets WHERE id = $1';
-const increasePetsHappinessQuery: string = 'UPDATE pets SET happiness = $2, happiness_last_updated = NOW() WHERE user_id = $1';
+const increasePetsHappinessAndXPQuery: string = 'UPDATE pets SET happiness = $2, happiness_last_updated = NOW(), xp = $3 WHERE user_id = $1';
 
 export enum TodoSize {
     Small = "small",
@@ -107,7 +107,7 @@ interface Database {
     getPetById: (pet_id: number) => Promise<PetDomain | Error>;
     updatePetById: (pet_id: number, name: string) => Promise<string | Error>;
     deletePetById: (pet_id: number) => Promise<string | Error>;
-    increasePetsHappiness: (user_id: number, increaseRate: number) => Promise<string | Error>;
+    increasePetsHappinessAndXP: (user_id: number, increaseRateHappiness: number, increaseXP: number) => Promise<string | Error>;
 }
 
 const database: Database = {
@@ -248,17 +248,19 @@ const database: Database = {
             return error
         }
     },
-    increasePetsHappiness: async function (user_id: number, increaseRate: number) {
+    increasePetsHappinessAndXP: async function (user_id: number, increaseRateHappiness: number, increseXP: number) {
         try {
             const pet = await this.getPetByUserId(user_id);
             if (pet instanceof PetDomain) {
                 const oldHappiness = pet.happiness;
-                let newHappiness = oldHappiness + increaseRate;
+                let newHappiness = oldHappiness + increaseRateHappiness;
                 if (newHappiness > 100) {
                     newHappiness = 100
-                } 
+                }
+                const oldXP = pet.xp;
+                let newXP = oldXP + increseXP;
                 // current time to database timestamp tz
-                await pool.query(increasePetsHappinessQuery, [user_id, newHappiness])
+                await pool.query(increasePetsHappinessAndXPQuery, [user_id, newHappiness, newXP])
                 return "ok"
             }
         } catch (error: any) {
