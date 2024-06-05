@@ -13,8 +13,8 @@ const deleteTodoByIdQuery: string = 'DELETE FROM todos WHERE id = $1';
 const getTodosByUserIdQuery: string = 'SELECT * FROM todos WHERE user_id = $1';
 const deleteTodosByUserIdQuery: string = 'DELETE FROM todos WHERE user_id = $1';
 const completeTodoByIdQuery: string = "UPDATE todos SET completed = true WHERE id = $1";
-const getActiveTodosByUserIdQuery: string = 'SELECT * from todos WHERE user_id = $1 AND completed = false';
-const getCompletedTodosByUserIdQuery: string = 'SELECT * from todos WHERE user_id = $1 AND completed = true';
+const getActiveTodosByUserIdQuery: string = 'SELECT * from todos WHERE user_id = $1 AND completed = false ORDER BY created_at DESC';
+const getCompletedTodosByUserIdQuery: string = 'SELECT * from todos WHERE user_id = $1 AND completed = true ORDER BY created_at DESC';
 
 //user querys
 const getAllUsersQuery: string = 'SELECT * FROM users';
