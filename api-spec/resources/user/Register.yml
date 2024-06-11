@@ -12,6 +12,8 @@ post:
   responses:
     '201':
       description: Added user with username and pet with petname
+    '400':
+      description: Bad request
 
   # This API has no security
   security: []

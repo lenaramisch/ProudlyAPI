@@ -187,7 +187,7 @@ const domain: domain = {
         try {
             const addUserResult = await this.addUser(username, password);
             if (addUserResult instanceof Error) {
-                return addUserResult.message;
+                return "failed";
             } else {
                 const newUser = await this.getUserByUsername(username);
                 if (newUser instanceof UserDomain) {
