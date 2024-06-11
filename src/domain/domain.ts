@@ -183,7 +183,6 @@ const domain: domain = {
     },
 
     registerNewUser: async function (username: string, petname: string, password: string, image_key: PetImage) {
-        //TODO IF USERNAME ALREADY EXISTS IN DB APP CRASHES -> FIX!
         try {
             const addUserResult = await this.addUser(username, password);
             if (addUserResult instanceof Error) {
