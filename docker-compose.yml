@@ -41,3 +41,16 @@ services:
       APP_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     depends_on:
       - db
+  
+  app:
+    container_name: proudly_app
+    build:
+      context: .
+      dockerfile: ./dockerfile
+    restart: on-failure
+    env_file:
+      - .env
+    depends_on:
+      - db
+    ports:
+      - "3030:3030"
